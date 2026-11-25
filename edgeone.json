@@ -1,0 +1,17 @@
+{
+  "name": "tom-riddle-shrine-edgeone",
+  "headers": [
+    {
+      "source": "/*",
+      "headers": [
+        { "key": "Cache-Control", "value": "max-age=3600" }
+      ]
+    },
+    {
+      "source": "/assets/*",
+      "headers": [
+        { "key": "Cache-Control", "value": "max-age=31536000" }
+      ]
+    }
+  ]
+}
