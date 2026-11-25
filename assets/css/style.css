@@ -265,7 +265,7 @@ main { padding-block: clamp(2.5rem, 5vw, 5rem); }
   margin: 0 0 0.9rem;
 }
 h1, h2, h3 { font-family: var(--font-display); font-weight: 400; line-height: 1.16; margin: 0; }
-h1 { font-size: var(--fs-xl); letter-spacing: 0.035em; color: var(--parchment); }
+h1 { font-size: var(--fs-xl); letter-spacing: 0.035em; color: var(--parchment); overflow-wrap: break-word; }
 h2 { font-size: var(--fs-lg); letter-spacing: 0.045em; }
 h3 { font-size: var(--fs-md); letter-spacing: 0.08em; color: var(--bronze-light); }
 p { margin: 0 0 1rem; }
@@ -569,6 +569,115 @@ html[lang="zh-CN"] .small {
   font-size: var(--fs-sm);
 }
 .footer-inner { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+
+/* ===== 表白题献：顶部题献带 / 底部藏书票框 ===== */
+.devotion { position: relative; }
+.devotion-line {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  row-gap: 0.2rem;
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  text-transform: uppercase;
+  color: var(--parchment-dim);
+}
+.devotion-name { white-space: nowrap; }
+.devotion-heart {
+  display: inline-flex;
+  align-items: center;
+  color: var(--bronze-light);
+  transform: translateY(-0.045em);
+}
+.devotion-heart svg { display: block; width: 1em; height: 1em; overflow: visible; }
+
+/* 顶部：卷首题献带 */
+.devotion--plate {
+  background: linear-gradient(180deg, rgba(176, 141, 87, 0.11), rgba(176, 141, 87, 0));
+  padding-block: 0.62rem 0.58rem;
+}
+.devotion--plate .devotion-line {
+  font-size: max(0.875rem, var(--fs-sm));
+  letter-spacing: 0.2em;
+  line-height: 1.4;
+}
+.devotion--plate .devotion-line::before,
+.devotion--plate .devotion-line::after {
+  content: "";
+  flex: 1 1 0;
+  min-width: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--line), transparent);
+}
+.devotion--plate .devotion-heart { filter: drop-shadow(0 0 5px rgba(243, 217, 164, 0.22)); }
+
+/* 底部：藏书票框 */
+.devotion--seal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.42rem;
+  width: min(30rem, 100%);
+  margin: 0 auto clamp(1.6rem, 3vw, 2.3rem);
+  padding: 0.9rem 1.2rem 0.82rem;
+  border: 1px solid var(--line);
+  box-shadow: inset 0 0 30px rgba(243, 217, 164, 0.05), 0 0 26px rgba(0, 0, 0, 0.26);
+}
+.devotion--seal::before {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border: 1px solid rgba(176, 141, 87, 0.15);
+  pointer-events: none;
+}
+.devotion--seal .devotion-line { font-size: var(--fs-base); letter-spacing: 0.16em; color: var(--parchment); }
+.devotion--seal .devotion-heart { font-size: 0.94em; filter: drop-shadow(0 0 7px rgba(243, 217, 164, 0.34)); }
+.devotion-label {
+  margin: 0;
+  font-size: var(--fs-xs);
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--bronze);
+}
+html[lang="zh-CN"] .devotion-label { font-size: 1.0625rem; letter-spacing: 0.22em; }
+/* 中文标签用 .22em 而非常用的 .28em：汉字为等宽方块字，大字距会散开；
+   与 .page-kicker 在 zh 下保留 .28em 的写法不一致，属刻意差异，勿「修正」。 */
+
+@media (max-width: 560px) {
+  .devotion--plate { padding-block: 0.5rem 0.46rem; }
+  .devotion--plate .devotion-line { letter-spacing: 0.13em; }
+  .devotion--seal { padding: 0.8rem 0.9rem 0.72rem; }
+  .devotion--seal .devotion-line { font-size: 1rem; letter-spacing: 0.1em; }
+  .devotion-label { letter-spacing: 0.2em; }
+}
+@media (max-width: 420px) {
+  .devotion--plate .devotion-line { letter-spacing: 0.1em; }
+  .devotion--plate .devotion-line::before,
+  .devotion--plate .devotion-line::after { flex: 0 0 1rem; }
+  .devotion--seal .devotion-line { font-size: 0.9375rem; letter-spacing: 0.08em; }
+}
+@media (max-width: 359px) {
+  .devotion-line { gap: 0.4rem; }
+  .devotion--plate .devotion-line::before,
+  .devotion--plate .devotion-line::after { display: none; }
+  .devotion--plate { border-bottom: 1px solid var(--line); }
+  .devotion--seal .devotion-line { font-size: 0.875rem; letter-spacing: 0.06em; }
+  .devotion-heart { font-size: 0.9em; } /* 只作用于顶部心形；底部被 .devotion--seal .devotion-heart(.94em) 以更高特异性覆盖，差 0.56px，已知刻意，勿「修正」 */
+}
+@media (forced-colors: active) {
+  .devotion--plate { border-block: 1px solid CanvasText; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .devotion--seal .devotion-heart { animation: devotionGlow 9s ease-in-out infinite alternate; }
+}
+@keyframes devotionGlow {
+  from { filter: drop-shadow(0 0 4px rgba(243, 217, 164, 0.2)); }
+  to   { filter: drop-shadow(0 0 9px rgba(243, 217, 164, 0.46)); }
+}
 
 /* Content is visible by default; only scripted pages animate it in. */
 .js .reveal { opacity: 0; transform: translateY(12px); }
