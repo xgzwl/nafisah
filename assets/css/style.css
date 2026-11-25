@@ -462,7 +462,9 @@ html[lang="zh-CN"] .small {
   line-height: 0.8;
   color: var(--bronze-light);
   float: left;
-  padding-right: 0.35rem;
+  /* 字号放大后字形右边距同比放大，用负边距收回，否则首词会读成两个词 */
+  padding-right: 0;
+  margin-right: -0.08em;
 }
 .quote-source {
   display: block;
@@ -590,6 +592,8 @@ html[lang="zh-CN"] .small {
   .hero-visual { order: -1; }
   .hero-visual img { height: 22rem; }
   .door-grid, .gallery-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  /* 两列下通栏图会把前一行挤出一格空洞，用 dense 让后续卡片回填 */
+  .gallery-grid { grid-auto-flow: row dense; }
   .quote-grid { grid-template-columns: 1fr; }
   .quote-card:nth-child(3n + 2),
   .quote-card:nth-child(5) { margin-top: 0; grid-column: auto; max-width: none; }
@@ -604,6 +608,13 @@ html[lang="zh-CN"] .small {
     height: auto;
     object-fit: initial;
   }
+}
+
+/* 仅两列区间（768-900）：12 项共 15 格为奇数，末张回归单格后正好铺满 7 行，消除行内空洞。
+   限定区间是为了不覆盖手机端"随图自然高度"的规则。 */
+@media (min-width: 768px) and (max-width: 900px) {
+  .gallery-item:last-child { grid-column: auto; }
+  .gallery-item:last-child img { aspect-ratio: 4 / 5; }
 }
 
 @media (max-width: 560px) {
