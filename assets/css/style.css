@@ -265,7 +265,7 @@ main { padding-block: clamp(2.5rem, 5vw, 5rem); }
   margin: 0 0 0.9rem;
 }
 h1, h2, h3 { font-family: var(--font-display); font-weight: 400; line-height: 1.16; margin: 0; }
-h1 { font-size: var(--fs-xl); letter-spacing: 0.035em; color: var(--parchment); }
+h1 { font-size: var(--fs-xl); letter-spacing: 0.035em; color: var(--parchment); overflow-wrap: break-word; }
 h2 { font-size: var(--fs-lg); letter-spacing: 0.045em; }
 h3 { font-size: var(--fs-md); letter-spacing: 0.08em; color: var(--bronze-light); }
 p { margin: 0 0 1rem; }
@@ -582,6 +582,7 @@ html[lang="zh-CN"] .small {
   row-gap: 0.2rem;
   margin: 0;
   font-family: var(--font-display);
+  font-weight: 400;
   text-transform: uppercase;
   color: var(--parchment-dim);
 }
@@ -643,6 +644,8 @@ html[lang="zh-CN"] .small {
   color: var(--bronze);
 }
 html[lang="zh-CN"] .devotion-label { font-size: 1.0625rem; letter-spacing: 0.22em; }
+/* 中文标签用 .22em 而非常用的 .28em：汉字为等宽方块字，大字距会散开；
+   与 .page-kicker 在 zh 下保留 .28em 的写法不一致，属刻意差异，勿「修正」。 */
 
 @media (max-width: 560px) {
   .devotion--plate { padding-block: 0.5rem 0.46rem; }
@@ -654,11 +657,17 @@ html[lang="zh-CN"] .devotion-label { font-size: 1.0625rem; letter-spacing: 0.22e
 @media (max-width: 420px) {
   .devotion--plate .devotion-line { letter-spacing: 0.1em; }
   .devotion--plate .devotion-line::before,
-  .devotion--plate .devotion-line::after { flex: 0 0 1.25rem; }
-  .devotion--seal .devotion-line { font-size: 0.9375rem; letter-spacing: 0.06em; }
+  .devotion--plate .devotion-line::after { flex: 0 0 1rem; }
+  .devotion--seal .devotion-line { font-size: 0.9375rem; letter-spacing: 0.08em; }
 }
 @media (max-width: 359px) {
-  .devotion--seal .devotion-line { font-size: 0.875rem; letter-spacing: 0.04em; }
+  .devotion-line { gap: 0.4rem; }
+  .devotion--plate .devotion-line { letter-spacing: 0.08em; }
+  .devotion--plate .devotion-line::before,
+  .devotion--plate .devotion-line::after { display: none; }
+  .devotion--plate { border-bottom: 1px solid var(--line); }
+  .devotion--seal .devotion-line { font-size: 0.875rem; letter-spacing: 0.06em; }
+  .devotion-heart { font-size: 0.9em; }
 }
 @media (forced-colors: active) {
   .devotion--plate { border-block: 1px solid CanvasText; }
