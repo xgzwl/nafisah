@@ -662,7 +662,6 @@ html[lang="zh-CN"] .devotion-label { font-size: 1.0625rem; letter-spacing: 0.22e
 }
 @media (max-width: 359px) {
   .devotion-line { gap: 0.4rem; }
-  .devotion--plate .devotion-line { letter-spacing: 0.08em; }
   .devotion--plate .devotion-line::before,
   .devotion--plate .devotion-line::after { display: none; }
   .devotion--plate { border-bottom: 1px solid var(--line); }
