@@ -11,6 +11,7 @@
 </head>
 <body id="top">
   <a class="skip-link" href="#main" data-i18n="common.skip">Skip to content</a>
+  <p id="lang-status" class="sr-only" aria-live="polite"></p>
   <header class="site-header">
     <div class="shell header-inner">
       <a class="brand" href="index.html" data-internal>
@@ -25,10 +26,10 @@
         <a href="gallery.html" data-internal data-nav data-i18n="nav.gallery">Gallery</a>
         <a href="disclaimer.html" data-internal data-nav data-i18n="nav.disclaimer">Notes</a>
       </nav>
-      <div class="lang-switch" role="group" aria-label="Language">
-        <button type="button" data-lang-btn="zh" aria-pressed="false">中</button>
-        <button type="button" data-lang-btn="en" aria-pressed="true">EN</button>
-        <button type="button" data-lang-btn="fr" aria-pressed="false">FR</button>
+      <div class="lang-switch" role="group" aria-label="Language" data-i18n-aria="lang.group">
+        <button type="button" data-lang-btn="zh" aria-pressed="false" aria-label="Chinese" data-i18n-aria="lang.zh">中</button>
+        <button type="button" data-lang-btn="en" aria-pressed="true" aria-label="English" data-i18n-aria="lang.en">EN</button>
+        <button type="button" data-lang-btn="fr" aria-pressed="false" aria-label="French" data-i18n-aria="lang.fr">FR</button>
       </div>
     </div>
   </header>
