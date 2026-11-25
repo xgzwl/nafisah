@@ -281,7 +281,6 @@ html[lang="zh-CN"] .letter-date,
 html[lang="zh-CN"] .note-index,
 html[lang="zh-CN"] .fact-list dt,
 html[lang="zh-CN"] .hero-caption,
-html[lang="zh-CN"] .gallery-caption h2,
 html[lang="zh-CN"] .gallery-caption p,
 html[lang="zh-CN"] .site-footer,
 html[lang="zh-CN"] .site-nav a,
@@ -500,11 +499,12 @@ html[lang="zh-CN"] .small {
   height: auto;
   aspect-ratio: 4 / 5;
   object-fit: cover;
+  object-position: center;
   filter: sepia(0.25) saturate(0.7) brightness(0.8);
-  transition: filter 0.35s var(--ease);
+  transition: filter 0.3s var(--ease);
 }
-.gallery-wide { grid-column: 1 / -1; }
-.gallery-wide img { aspect-ratio: 16 / 9; }
+.gallery-item[data-ratio="wide"] { grid-column: 1 / -1; }
+.gallery-item[data-ratio="wide"] img { aspect-ratio: 16 / 9; }
 
 /* Art direction: lock each crop on the subject itself. */
 .gallery-item:nth-child(1) img { object-position: 50% 45%; }
@@ -530,12 +530,17 @@ html[lang="zh-CN"] .small {
   line-height: 1.5;
 }
 .gallery-caption h2 {
-  font-size: var(--fs-sm);
+  font-size: 1.08rem;
   letter-spacing: 0.1em;
   color: var(--bronze-light);
   margin: 0 0 0.25rem;
 }
-.gallery-caption p { margin: 0; font-size: var(--fs-sm); color: var(--parchment-dim); }
+.gallery-caption p {
+  margin: 0;
+  font-size: var(--fs-sm);
+  line-height: 1.5;
+  color: var(--parchment-dim);
+}
 
 .notes { display: grid; gap: 1rem; max-width: 62rem; }
 .note-item { display: grid; grid-template-columns: 2.5rem 1fr; gap: 0.7rem; align-items: start; }
@@ -593,11 +598,11 @@ html[lang="zh-CN"] .small {
 
 @media (max-width: 767px) {
   .gallery-grid { grid-template-columns: 1fr; }
-  .gallery-wide { grid-column: auto; }
-  .gallery-item img,
-  .gallery-wide img {
+  .gallery-item[data-ratio="wide"] { grid-column: auto; }
+  .gallery-item img {
     aspect-ratio: auto;
     height: auto;
+    object-fit: initial;
   }
 }
 
