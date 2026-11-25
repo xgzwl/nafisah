@@ -361,7 +361,7 @@
       "g7.cap": "Le flacon d'encre",
       "g7.note": "Une petite flaque sombre",
       "g7.alt": "Un flacon de verre facetté rempli d'encre sombre",
-      "g8.cap": "Un encrier du XIXe siècle",
+      "g8.cap": "Un encrier du XIX<span class=\"ord\">e</span> siècle",
       "g8.note": "Le bureau d'une autre époque",
       "g8.alt": "Un encrier en cristal taillé au couvercle doré",
       "g9.cap": "La rose de Redouté",

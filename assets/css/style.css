@@ -537,6 +537,15 @@ html[lang="zh-CN"] .small {
   color: var(--bronze-light);
   margin: 0 0 0.25rem;
 }
+/* 法文序数词的上标 e（XIXᵉ）：Cinzel 只有大写形态，小写 e 会被渲染成 E，
+   故该字符改用正文字体（含真小写）并缩小上移。仅在 fr 的 g8.cap 使用。 */
+.gallery-caption h2 .ord {
+  font-family: var(--font-body);
+  font-size: 0.68em;
+  letter-spacing: 0;
+  vertical-align: 0.42em;
+  line-height: 1;
+}
 .gallery-caption p {
   margin: 0;
   font-size: var(--fs-sm);
