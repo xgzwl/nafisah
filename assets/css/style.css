@@ -666,7 +666,7 @@ html[lang="zh-CN"] .devotion-label { font-size: 1.0625rem; letter-spacing: 0.22e
   .devotion--plate .devotion-line::after { display: none; }
   .devotion--plate { border-bottom: 1px solid var(--line); }
   .devotion--seal .devotion-line { font-size: 0.875rem; letter-spacing: 0.06em; }
-  .devotion-heart { font-size: 0.9em; }
+  .devotion-heart { font-size: 0.9em; } /* 只作用于顶部心形；底部被 .devotion--seal .devotion-heart(.94em) 以更高特异性覆盖，差 0.56px，已知刻意，勿「修正」 */
 }
 @media (forced-colors: active) {
   .devotion--plate { border-block: 1px solid CanvasText; }
