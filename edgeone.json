@@ -1,5 +1,8 @@
 {
   "name": "tom-riddle-shrine-edgeone",
+  "buildCommand": "",
+  "installCommand": "",
+  "outputDirectory": ".",
   "headers": [
     {
       "source": "/*",
