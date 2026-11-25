@@ -16,6 +16,27 @@
   font-display: swap;
 }
 @font-face {
+  font-family: "Cinzel Decorative";
+  src: url("../fonts/cinzel-decorative-400.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Cormorant Infant";
+  src: url("../fonts/cormorant-infant-400.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Cormorant Infant";
+  src: url("../fonts/cormorant-infant-500.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
   font-family: "Cormorant Garamond";
   src: url("../fonts/cormorant-garamond-400.woff2") format("woff2");
   font-weight: 400;
@@ -37,15 +58,29 @@
   font-display: swap;
 }
 @font-face {
-  font-family: "EB Garamond";
-  src: url("../fonts/eb-garamond-400.woff2") format("woff2");
+  font-family: "Newsreader";
+  src: url("../fonts/newsreader-400.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
-  font-family: "EB Garamond";
-  src: url("../fonts/eb-garamond-500.woff2") format("woff2");
+  font-family: "Newsreader";
+  src: url("../fonts/newsreader-500.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Spectral";
+  src: url("../fonts/spectral-400.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Spectral";
+  src: url("../fonts/spectral-500.woff2") format("woff2");
   font-weight: 500;
   font-style: normal;
   font-display: swap;
@@ -62,9 +97,22 @@
   --candle: #f3d9a4;
   --line: rgba(176, 141, 87, 0.28);
   --shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+
+  /* Type scale: Chinese body copy stays at or above 17px. */
+  --fs-xs: clamp(0.78rem, 0.76rem + 0.1vw, 0.84rem);
+  --fs-sm: clamp(0.82rem, 0.80rem + 0.15vw, 0.9rem);
+  --fs-base: clamp(1.06rem, 1rem + 0.35vw, 1.2rem);
+  --fs-md: clamp(1.3rem, 1.15rem + 0.8vw, 1.6rem);
+  --fs-lg: clamp(1.8rem, 1.4rem + 2vw, 2.6rem);
+  --fs-xl: clamp(2.6rem, 2rem + 4vw, 4.4rem);
+
   --font-display: "Cinzel", Georgia, serif;
-  --font-body: "Cormorant Garamond", "EB Garamond", Georgia, serif;
-  --font-zh: "LXGW WenKai", "Songti SC", "Noto Serif CJK SC", serif;
+  --font-deco: "Cinzel Decorative", "Cinzel", Georgia, serif;
+  --font-hero: "Cormorant Infant", "Cormorant Garamond", Georgia, serif;
+  --font-body: "Newsreader", "Cormorant Garamond", Georgia, serif;
+  --font-fr: "Spectral", "Newsreader", Georgia, serif;
+  --font-zh: "LXGW WenKai", "Songti SC", serif;
+
   --space-1: 0.5rem;
   --space-2: 1rem;
   --space-3: 1.75rem;
@@ -86,16 +134,41 @@ body {
     radial-gradient(circle at 88% 22%, rgba(176, 141, 87, 0.08), transparent 28rem),
     repeating-linear-gradient(112deg, rgba(255, 255, 255, 0.012) 0 1px, transparent 1px 7px);
   font-family: var(--font-body);
-  font-size: clamp(1rem, 0.97rem + 0.2vw, 1.18rem);
-  line-height: 1.72;
+  font-size: var(--fs-base);
+  line-height: 1.68;
   min-height: 100vh;
 }
 
-body[lang="zh-CN"] { font-family: var(--font-zh), var(--font-body); }
+html[lang="fr"] body { font-family: var(--font-fr); }
+
+/* Re-map the body token in Chinese scope so Newsreader handles Latin and
+   LXGW WenKai handles Han before the generic serif is reached. */
+html[lang="zh-CN"] {
+  --font-body: "Newsreader", "LXGW WenKai", "Songti SC", Georgia, serif;
+}
+html[lang="zh-CN"] body {
+  font-family: var(--font-body), var(--font-zh);
+  line-height: 1.75;
+  letter-spacing: 0.02em;
+}
 
 a { color: inherit; text-decoration: none; }
 img { display: block; max-width: 100%; height: auto; }
+figure { margin: 0; }
 button { font: inherit; }
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
 
 .skip-link {
   position: absolute;
@@ -130,20 +203,20 @@ button { font: inherit; }
 .brand { display: flex; flex-direction: column; gap: 0.1rem; }
 .brand-name {
   font-family: var(--font-display);
-  font-size: 0.98rem;
+  font-size: var(--fs-sm);
   letter-spacing: 0.16em;
   color: var(--parchment);
   text-transform: uppercase;
 }
 .brand-eyebrow {
-  font-size: 0.78rem;
+  font-size: var(--fs-xs);
   letter-spacing: 0.2em;
-  color: var(--bronze);
+  color: var(--bronze-light);
   text-transform: uppercase;
 }
 .site-nav { display: flex; align-items: center; gap: clamp(0.7rem, 1.6vw, 1.6rem); flex-wrap: wrap; }
 .site-nav a {
-  font-size: 0.9rem;
+  font-size: var(--fs-sm);
   letter-spacing: 0.08em;
   color: var(--parchment-dim);
   padding-bottom: 0.2rem;
@@ -156,13 +229,15 @@ button { font: inherit; }
 
 .lang-switch { display: flex; gap: 0.35rem; align-items: center; }
 .lang-switch button {
+  min-width: 44px;
+  min-height: 44px;
   background: transparent;
   border: 1px solid var(--line);
   color: var(--parchment-dim);
   border-radius: 2px;
-  font-size: 0.75rem;
+  font-size: var(--fs-sm);
   letter-spacing: 0.12em;
-  padding: 0.3rem 0.55rem;
+  padding: 0.55rem 0.8rem;
   cursor: pointer;
   transition: color 0.3s var(--ease), border-color 0.3s var(--ease), background 0.3s var(--ease);
 }
@@ -172,26 +247,48 @@ button { font: inherit; }
   background: var(--bronze-light);
   border-color: var(--bronze-light);
 }
+.lang-switch button:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 3px var(--candle);
+}
 
 main { padding-block: clamp(2.5rem, 5vw, 5rem); }
 
 .page-head { max-width: 62ch; margin-bottom: var(--space-4); }
 .page-kicker {
   font-family: var(--font-display);
-  font-size: 0.74rem;
+  font-size: var(--fs-xs);
   letter-spacing: 0.28em;
   text-transform: uppercase;
-  color: var(--bronze);
+  color: var(--bronze-light);
   margin: 0 0 0.9rem;
 }
 h1, h2, h3 { font-family: var(--font-display); font-weight: 400; line-height: 1.16; margin: 0; }
-h1 { font-size: clamp(2.2rem, 5.4vw, 4.2rem); letter-spacing: 0.035em; color: var(--parchment); }
-h2 { font-size: clamp(1.7rem, 3.4vw, 2.7rem); letter-spacing: 0.045em; }
-h3 { font-size: 1.08rem; letter-spacing: 0.1em; color: var(--bronze-light); }
+h1 { font-size: var(--fs-xl); letter-spacing: 0.035em; color: var(--parchment); }
+h2 { font-size: var(--fs-lg); letter-spacing: 0.045em; }
+h3 { font-size: var(--fs-md); letter-spacing: 0.08em; color: var(--bronze-light); }
 p { margin: 0 0 1rem; }
-.lead { font-size: 1.14rem; color: var(--parchment-dim); max-width: 60ch; }
+.lead { font-size: var(--fs-md); color: var(--parchment-dim); max-width: 60ch; }
 .muted { color: var(--parchment-dim); }
-.small { font-size: 0.86rem; }
+.small { font-size: var(--fs-sm); }
+
+/* Small Chinese labels must never drop below 17px, including at 560px. */
+html[lang="zh-CN"] .brand-eyebrow,
+html[lang="zh-CN"] .page-kicker,
+html[lang="zh-CN"] .quote-source,
+html[lang="zh-CN"] .letter-date,
+html[lang="zh-CN"] .note-index,
+html[lang="zh-CN"] .fact-list dt,
+html[lang="zh-CN"] .hero-caption,
+html[lang="zh-CN"] .gallery-caption p,
+html[lang="zh-CN"] .site-footer,
+html[lang="zh-CN"] .site-nav a,
+html[lang="zh-CN"] .lang-switch button,
+html[lang="zh-CN"] .btn,
+html[lang="zh-CN"] .small {
+  font-size: 1.0625rem;
+}
 
 .divider {
   display: flex;
@@ -235,20 +332,24 @@ p { margin: 0 0 1rem; }
 }
 .hero-copy { position: relative; z-index: 2; }
 .hero-name {
-  font-family: var(--font-body);
+  font-family: var(--font-hero);
   font-style: italic;
   font-weight: 400;
-  font-size: clamp(2.7rem, 7vw, 5.6rem);
-  line-height: 0.98;
-  letter-spacing: -0.025em;
-  background: linear-gradient(120deg, var(--parchment) 15%, var(--bronze-light) 48%, var(--parchment) 78%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
+  font-size: var(--fs-xl);
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+  color: var(--parchment);
+}
+.hero-name::after {
+  content: "";
+  display: block;
+  width: 3.2rem;
+  height: 1px;
+  background: var(--bronze);
+  margin-top: 1rem;
 }
 .hero-tagline {
-  font-size: clamp(1.35rem, 2.2vw, 1.9rem);
+  font-size: var(--fs-md);
   color: var(--candle);
   margin: 1.4rem 0 1rem;
   font-weight: 500;
@@ -260,14 +361,14 @@ p { margin: 0 0 1rem; }
   gap: 0.55rem;
   border: 1px solid var(--bronze);
   padding: 0.72rem 1.25rem;
-  font-size: 0.88rem;
+  font-size: var(--fs-sm);
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--ink);
   background: var(--bronze-light);
-  transition: background 0.4s var(--ease), color 0.4s var(--ease), transform 0.4s var(--ease);
+  transition: background 0.4s var(--ease), color 0.4s var(--ease), border-color 0.4s var(--ease);
 }
-.btn:hover, .btn:focus-visible { background: transparent; color: var(--candle); transform: translateY(-2px); }
+.btn:hover, .btn:focus-visible { background: transparent; color: var(--candle); }
 .btn-ghost { background: transparent; color: var(--parchment); border-color: var(--line); }
 .btn-ghost:hover, .btn-ghost:focus-visible { color: var(--candle); border-color: var(--bronze); }
 
@@ -294,7 +395,7 @@ p { margin: 0 0 1rem; }
   left: 1.2rem;
   bottom: 1.1rem;
   z-index: 2;
-  font-size: 0.82rem;
+  font-size: var(--fs-sm);
   letter-spacing: 0.12em;
   color: var(--parchment-dim);
 }
@@ -316,8 +417,7 @@ p { margin: 0 0 1rem; }
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1.3rem;
 }
-.door { display: block; transition: transform 0.5s var(--ease); }
-.door:hover { transform: translateY(-4px); }
+.door { display: block; }
 .door h3 { margin-bottom: 0.6rem; }
 .door p { margin: 0; color: var(--parchment-dim); }
 
@@ -335,7 +435,7 @@ p { margin: 0 0 1rem; }
 }
 .fact-list dt {
   font-family: var(--font-display);
-  font-size: 0.84rem;
+  font-size: var(--fs-sm);
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--bronze-light);
@@ -351,7 +451,7 @@ p { margin: 0 0 1rem; }
 .quote-card:nth-child(3n + 2) { margin-top: 2.2rem; }
 .quote-card:nth-child(5) { grid-column: 1 / -1; max-width: 46rem; }
 .quote-text {
-  font-size: clamp(1.2rem, 2vw, 1.55rem);
+  font-size: var(--fs-md);
   line-height: 1.55;
   color: var(--parchment);
   margin: 0 0 1.4rem;
@@ -362,13 +462,15 @@ p { margin: 0 0 1rem; }
   line-height: 0.8;
   color: var(--bronze-light);
   float: left;
-  padding-right: 0.35rem;
+  /* 字号放大后字形右边距同比放大，用负边距收回，否则首词会读成两个词 */
+  padding-right: 0;
+  margin-right: -0.08em;
 }
 .quote-source {
   display: block;
-  font-size: 0.82rem;
+  font-size: var(--fs-sm);
   letter-spacing: 0.1em;
-  color: var(--bronze);
+  color: var(--bronze-light);
   text-transform: uppercase;
 }
 
@@ -376,58 +478,108 @@ p { margin: 0 0 1rem; }
 .letter:nth-child(even) { margin-left: min(6vw, 4rem); }
 .letter-date {
   font-family: var(--font-display);
-  font-size: 0.78rem;
+  font-size: var(--fs-sm);
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--bronze);
+  color: var(--bronze-light);
   margin-bottom: 1rem;
 }
-.letter-body { font-size: 1.12rem; }
+.letter-body { font-size: var(--fs-base); }
 
 .gallery-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1.25rem;
 }
-.gallery-item { position: relative; overflow: hidden; border: 1px solid var(--line); background: var(--charcoal); }
+.gallery-item {
+  border: 1px solid var(--line);
+  background: var(--charcoal);
+  transition: border-color 0.3s var(--ease);
+}
 .gallery-item img {
   width: 100%;
-  height: 18rem;
+  height: auto;
+  aspect-ratio: 4 / 5;
   object-fit: cover;
-  filter: sepia(0.3) saturate(0.65) brightness(0.78);
-  transition: transform 0.9s var(--ease), filter 0.9s var(--ease);
+  object-position: center;
+  filter: sepia(0.25) saturate(0.7) brightness(0.8);
+  transition: filter 0.3s var(--ease);
 }
-.gallery-item:hover img { transform: scale(1.035); filter: sepia(0.22) saturate(0.8) brightness(0.9); }
-.gallery-item:nth-child(1) img,
-.gallery-item:nth-child(5) img { filter: sepia(0.42) saturate(0.45) brightness(0.68) hue-rotate(55deg); }
+.gallery-item[data-ratio="wide"] { grid-column: 1 / -1; }
+.gallery-item[data-ratio="wide"] img { aspect-ratio: 16 / 9; }
+
+/* Art direction: lock each crop on the subject itself. */
+.gallery-item:nth-child(1) img { object-position: 50% 45%; }
+.gallery-item:nth-child(2) img { object-position: 50% 40%; }
+.gallery-item:nth-child(3) img { object-position: 50% 45%; }
+.gallery-item:nth-child(4) img { object-position: 50% 50%; }
+.gallery-item:nth-child(5) img { object-position: 50% 55%; }
+.gallery-item:nth-child(6) img { object-position: 50% 50%; }
+.gallery-item:nth-child(7) img { object-position: 50% 40%; }
+.gallery-item:nth-child(8) img { object-position: 50% 50%; }
+.gallery-item:nth-child(9) img { object-position: 50% 40%; }
+.gallery-item:nth-child(10) img { object-position: 50% 35%; }
+.gallery-item:nth-child(11) img { object-position: 50% 45%; }
+.gallery-item:nth-child(12) img { object-position: 50% 45%; }
+
+@media (hover: hover) {
+  .gallery-item:hover { border-color: var(--bronze); }
+  .gallery-item:hover img { filter: sepia(0.25) saturate(0.7) brightness(0.88); }
+}
 .gallery-caption {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  padding: 2.5rem 1rem 0.9rem;
-  background: linear-gradient(180deg, transparent, rgba(14, 26, 23, 0.94));
+  border-top: 1px solid var(--line);
+  padding: 0.75rem 1rem 1rem;
+  line-height: 1.5;
 }
-.gallery-caption h3 { margin-bottom: 0.2rem; }
-.gallery-caption p { margin: 0; font-size: 0.84rem; color: var(--parchment-dim); }
+.gallery-caption h2 {
+  font-size: 1.08rem;
+  letter-spacing: 0.1em;
+  color: var(--bronze-light);
+  margin: 0 0 0.25rem;
+}
+.gallery-caption p {
+  margin: 0;
+  font-size: var(--fs-sm);
+  line-height: 1.5;
+  color: var(--parchment-dim);
+}
+/* 需署名素材（CC BY）的图注尾行：保持克制，不与正文抢注意力 */
+.gallery-credit {
+  display: block;
+  margin-top: 0.45rem;
+  font-size: var(--fs-xs);
+  letter-spacing: 0.04em;
+  color: var(--parchment-dim);
+  opacity: 0.62;
+}
 
 .notes { display: grid; gap: 1rem; max-width: 62rem; }
 .note-item { display: grid; grid-template-columns: 2.5rem 1fr; gap: 0.7rem; align-items: start; }
-.note-index { font-family: var(--font-display); color: var(--bronze); font-size: 0.9rem; padding-top: 0.3rem; }
+.note-index {
+  font-family: var(--font-display);
+  color: var(--bronze-light);
+  font-size: var(--fs-sm);
+  padding-top: 0.3rem;
+}
 
 .site-footer {
   border-top: 1px solid var(--line);
   padding-block: 2rem 2.6rem;
   color: var(--parchment-dim);
-  font-size: 0.86rem;
+  font-size: var(--fs-sm);
 }
 .footer-inner { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
 
-.reveal { opacity: 0; transform: translateY(12px); }
-.reveal.is-visible { opacity: 1; transform: none; transition: opacity 0.85s var(--ease), transform 0.85s var(--ease); }
-.reveal:nth-child(2) { transition-delay: 0.08s; }
-.reveal:nth-child(3) { transition-delay: 0.16s; }
-.reveal:nth-child(4) { transition-delay: 0.24s; }
+/* Content is visible by default; only scripted pages animate it in. */
+.js .reveal { opacity: 0; transform: translateY(12px); }
+.js .reveal.is-visible {
+  opacity: 1;
+  transform: none;
+  transition: opacity 0.4s var(--ease), transform 0.4s var(--ease);
+}
+.js .reveal:nth-child(2) { transition-delay: 0.05s; }
+.js .reveal:nth-child(3) { transition-delay: 0.1s; }
+.js .reveal:nth-child(n + 4) { transition-delay: 0.1s; }
 
 :focus-visible { outline: 2px solid var(--candle); outline-offset: 3px; }
 
@@ -436,8 +588,8 @@ p { margin: 0 0 1rem; }
   .hero-visual::after { animation: sheen 12s ease-in-out infinite alternate; }
 }
 @keyframes flicker {
-  0% { transform: rotate(-2deg) scaleY(0.96); opacity: 0.7; }
-  100% { transform: rotate(2deg) scaleY(1.04); opacity: 1; }
+  0% { transform: rotate(-1deg) scaleY(0.97); opacity: 0.75; }
+  100% { transform: rotate(1deg) scaleY(1.03); opacity: 1; }
 }
 @keyframes sheen {
   0% { opacity: 0.45; }
@@ -449,21 +601,39 @@ p { margin: 0 0 1rem; }
   .hero-visual { order: -1; }
   .hero-visual img { height: 22rem; }
   .door-grid, .gallery-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  /* 两列下通栏图会把前一行挤出一格空洞，用 dense 让后续卡片回填 */
+  .gallery-grid { grid-auto-flow: row dense; }
   .quote-grid { grid-template-columns: 1fr; }
   .quote-card:nth-child(3n + 2),
   .quote-card:nth-child(5) { margin-top: 0; grid-column: auto; max-width: none; }
   .letter:nth-child(even) { margin-left: 0; }
 }
 
+@media (max-width: 767px) {
+  .gallery-grid { grid-template-columns: 1fr; }
+  .gallery-item[data-ratio="wide"] { grid-column: auto; }
+  .gallery-item img {
+    aspect-ratio: auto;
+    height: auto;
+    object-fit: initial;
+  }
+}
+
+/* 仅两列区间（768-900）：12 项共 15 格为奇数，末张回归单格后正好铺满 7 行，消除行内空洞。
+   限定区间是为了不覆盖手机端"随图自然高度"的规则。 */
+@media (min-width: 768px) and (max-width: 900px) {
+  .gallery-item:last-child { grid-column: auto; }
+  .gallery-item:last-child img { aspect-ratio: 4 / 5; }
+}
+
 @media (max-width: 560px) {
   .shell { width: min(100% - 1.4rem, 1120px); }
   .header-inner { align-items: flex-start; }
   .site-nav { gap: 0.65rem 1rem; width: 100%; }
-  .site-nav a { font-size: 0.82rem; }
+  .site-nav a { font-size: var(--fs-sm); }
   .lang-switch { margin-left: auto; }
   .hero-visual img { height: 17rem; }
   .door-grid, .gallery-grid { grid-template-columns: 1fr; }
-  .gallery-item img { height: 14rem; }
   .fact-list { grid-template-columns: 1fr; }
   .fact-list dt { padding-bottom: 0.2rem; border-bottom: 0; }
   .fact-list dd { padding-top: 0.2rem; }
@@ -474,5 +644,5 @@ p { margin: 0 0 1rem; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation: none !important; transition-duration: 0.01ms !important; }
-  .reveal { opacity: 1; transform: none; }
+  .js .reveal { opacity: 1; transform: none; }
 }
