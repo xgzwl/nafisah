@@ -93,6 +93,20 @@ export async function createLetter(
   return { id, createdAt, status: 'published' };
 }
 
+export async function probeHash(): Promise<Record<string, string>> {
+  const r: Record<string, string> = {};
+  const g = globalThis as unknown as { crypto?: { subtle?: unknown }; TextEncoder?: unknown };
+  r.hasCrypto = String(!!g.crypto);
+  r.hasSubtle = String(!!g.crypto?.subtle);
+  r.hasTextEncoder = String(!!g.TextEncoder);
+  try {
+    r.hash = await hashClientIp('1.2.3.4', 'probe-salt');
+  } catch (e) {
+    r.hashError = ((e as Error)?.name || 'err') + ':' + String((e as Error)?.message).slice(0, 150);
+  }
+  return r;
+}
+
 export async function probeWrite(): Promise<{ letters: string; limits: string }> {
   const result = { letters: 'ok', limits: 'ok' };
   try {
