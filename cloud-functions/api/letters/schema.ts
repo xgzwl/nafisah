@@ -3,6 +3,7 @@ import {
   ApiError,
   type CreateLetterInput,
   type CreateParseResult,
+  type FunctionHeaders,
   type ListQuery,
   type Locale,
   type LetterStatus,
@@ -165,17 +166,29 @@ export function parseId(value: unknown): string {
   return value;
 }
 
-export function headerValue(
-  headers: Record<string, string | string[] | undefined>,
-  name: string,
-): string | undefined {
-  const value = headers[name];
+export function headerValue(headers: FunctionHeaders | undefined, name: string): string | undefined {
+  if (!headers) return undefined;
+  // 标准 Headers 对象：没有自有可枚举属性，必须用 get()（大小写不敏感由平台保证）。
+  if (typeof (headers as { get?(n: string): string | null }).get === 'function') {
+    const value = (headers as { get(n: string): string | null }).get(name);
+    return typeof value === 'string' ? value : undefined;
+  }
+  // 普通对象形态：原样读取；附带一次大小写不敏感回退，兼容不同运行时的键名规范化差异。
+  const plain = headers as Record<string, string | string[] | undefined>;
+  const value = plain[name];
   if (typeof value === 'string') return value;
   if (Array.isArray(value)) return value[0];
+  const lowered = name.toLowerCase();
+  for (const key of Object.keys(plain)) {
+    if (key.toLowerCase() !== lowered) continue;
+    const fallback = plain[key];
+    if (typeof fallback === 'string') return fallback;
+    if (Array.isArray(fallback)) return fallback[0];
+  }
   return undefined;
 }
 
-export function clientIpFromHeaders(headers: Record<string, string | string[] | undefined>): string {
+export function clientIpFromHeaders(headers: FunctionHeaders | undefined): string {
   const direct = headerValue(headers, 'cf-connecting-ip');
   if (direct) return direct.trim();
   const forwarded = headerValue(headers, 'x-forwarded-for');

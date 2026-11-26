@@ -77,10 +77,16 @@ export class ApiError extends Error {
   }
 }
 
+// EdgeOne Cloud Functions 的 request.headers 是标准 Headers 对象（暴露 get()，
+// 没有自有可枚举属性）；本地/其他运行时可能是普通对象。两者都要能读。
+export type FunctionHeaders =
+  | Record<string, string | string[] | undefined>
+  | { get(name: string): string | null };
+
 export interface FunctionRequest {
   method: string;
   url: string;
-  headers: Record<string, string | string[] | undefined>;
+  headers: FunctionHeaders;
   json(): Promise<unknown>;
 }
 
