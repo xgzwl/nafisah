@@ -196,16 +196,23 @@ async function localGates() {
 
 /* ---------------- 部署门禁（查状态，不 sleep 盲等） ---------------- */
 async function deployGates() {
-  await gate('deploy', 'CNB 最近构建 success 且 sha=本地 HEAD', () => {
+  await gate('deploy', 'CNB 最近构建 success 且 sha=本地 HEAD', async () => {
     const today = new Date().toISOString().slice(0, 10);
-    const r = run('cnb', ['build', 'get-build-logs', '--repo', REPO, '--targetRef', 'main', '--createTime', today, '--page-size', '3']);
-    if (r.code !== 0) return no('cnb CLI: ' + flat(r.err || r.out));
-    const st = (r.out.match(/^\s+status:\s*(\w+)/m) || [])[1];
-    const sha = (r.out.match(/sha:\s*([0-9a-f]{40})/) || [])[1];
     const head = run('git', ['rev-parse', 'HEAD']).out.trim();
-    if (st !== 'success') return no('最近构建=' + (st || 'unknown'));
+    let st = 'unknown', sha = '', logTail = '';
+    // 刚 push 完时构建常处于 pending，按状态轮询而非一次判死。
+    for (let i = 0; i < 6; i++) {
+      const r = run('cnb', ['build', 'get-build-logs', '--repo', REPO, '--targetRef', 'main', '--createTime', today, '--page-size', '3']);
+      if (r.code !== 0) return no('cnb CLI: ' + flat(r.err || r.out));
+      st = (r.out.match(/^\s+status:\s*(\w+)/m) || [])[1] || 'unknown';
+      sha = (r.out.match(/sha:\s*([0-9a-f]{40})/) || [])[1] || '';
+      logTail = `${st} ${sha.slice(0, 7)}`;
+      if (st === 'success' || st === 'error' || st === 'cancel') break;
+      if (i < 5) await new Promise((res) => setTimeout(res, 10000));
+    }
+    if (st !== 'success') return no('最近构建=' + logTail);
     if (sha && sha !== head) return no(`构建sha=${sha.slice(0, 7)} 本地=${head.slice(0, 7)}`);
-    return ok('success ' + head.slice(0, 7));
+    return ok('success ' + sha.slice(0, 7));
   });
 
   await gate('deploy', 'EdgeOne 已拉取（Last-Modified ≥ 构建时间）', async () => {
@@ -354,7 +361,9 @@ async function onlineGates() {
   if (failed.length) {
     console.log('FAILED:');
     for (const r of failed) console.log(`  · ${r.group} · ${r.name} — ${flat(r.detail)}`);
-    if (createdIds.length) console.log(`残留测试信（需人工清理）: ${createdIds.join(', ')}`);
+    // 只有清理 gate 自身失败时才提示残留；否则会误导（清理其实已成功）。
+    const cleanupFailed = failed.some((r) => r.name === '测试信已清理' && !/SKIP/.test(r.detail));
+    if (cleanupFailed) console.log(`测试信清理失败，残留 id: ${createdIds.join(', ')}`);
     process.exit(1);
   }
   process.exit(0);
