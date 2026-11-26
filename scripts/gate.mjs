@@ -310,21 +310,21 @@ async function onlineGates() {
   });
 
   await gate('online', '敏感路径零泄漏', () => {
-    // 真敏感：服务端源码 + 环境变量。这两类必须 404。
+    // 真敏感：服务端源码 + 环境变量，必须 404。
     const critical = ['agents/chat/index.ts', 'cloud-functions/api/letters/index.ts', '.env'];
     const bad = [];
     for (const p of critical) {
       const r = curl(['-o', '/dev/null', '-w', '%{http_code}', `${SITE}/${p}`]);
       if (r.out.trim() !== '404') bad.push(`${p}=${r.out.trim()}`);
     }
-    // 配置文件（tsconfig/package）当前部署会暴露，但内容不含密钥，记录为 advisory 不阻断。
-    const advisory = [];
-    for (const p of ['tsconfig.json', 'package.json']) {
+    // 配置文件必须被 redirect 隐藏（302→404.html），不允许直接 200 暴露。
+    const configs = ['tsconfig.json', 'package.json'];
+    for (const p of configs) {
       const r = curl(['-o', '/dev/null', '-w', '%{http_code}', `${SITE}/${p}`]);
-      if (r.out.trim() !== '404') advisory.push(p);
+      const c = r.out.trim();
+      if (c !== '302' && c !== '404') bad.push(`${p}=${c}(应302/404)`);
     }
-    const suffix = advisory.length ? ` | advisory: ${advisory.join(',')} 可访问(无密钥)` : '';
-    return bad.length ? no(bad.join(' ') + suffix) : ok(`${critical.length} critical paths → 404` + suffix);
+    return bad.length ? no(bad.join(' ')) : ok(`${critical.length} 源码→404, ${configs.length} 配置→302隐藏`);
   });
 
   await gate('online', '测试信已清理', () => {
