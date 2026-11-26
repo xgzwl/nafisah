@@ -1,3 +1,4 @@
+import { createHmac } from 'node:crypto';
 import {
   ApiError,
   type CreateLetterInput,
@@ -12,17 +13,6 @@ const TEXT_MAX = 1000;
 const NAME_MAX = 40;
 const LOCALES: readonly Locale[] = ['en', 'zh', 'fr'];
 
-type SubtleLike = {
-  importKey(
-    format: 'raw',
-    key: Uint8Array,
-    algorithm: { name: 'HMAC'; hash: 'SHA-256' },
-    extractable: boolean,
-    usages: string[],
-  ): Promise<unknown>;
-  sign(algorithm: { name: 'HMAC' }, key: unknown, data: Uint8Array): Promise<ArrayBuffer>;
-};
-type EncoderLike = { encode(input: string): Uint8Array };
 
 function objectOf(value: unknown): Record<string, unknown> {
   if (value === null || typeof value !== 'object' || Array.isArray(value)) {
@@ -194,21 +184,7 @@ export function clientIpFromHeaders(headers: Record<string, string | string[] | 
 }
 
 export async function hashClientIp(ip: string, salt: string): Promise<string> {
-  const runtime = globalThis as unknown as {
-    crypto: { subtle: SubtleLike };
-    TextEncoder: new () => EncoderLike;
-  };
-  const encoder = new runtime.TextEncoder();
-  const key = await runtime.crypto.subtle.importKey(
-    'raw',
-    encoder.encode(salt),
-    { name: 'HMAC', hash: 'SHA-256' },
-    false,
-    ['sign'],
-  );
-  const signature = await runtime.crypto.subtle.sign({ name: 'HMAC' }, key, encoder.encode(ip));
-  return Array.from(new Uint8Array(signature))
-    .map((byte) => byte.toString(16).padStart(2, '0'))
-    .join('')
-    .slice(0, 16);
+  // 用 Node 内置 createHmac，不依赖 Web Crypto 的 subtle——后者在 EdgeOne
+  // Cloud Functions 运行时不保证暴露，曾导致线上限流哈希抛错被兜底成 50001。
+  return createHmac('sha256', salt).update(ip).digest('hex').slice(0, 16);
 }

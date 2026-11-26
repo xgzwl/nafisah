@@ -93,38 +93,6 @@ export async function createLetter(
   return { id, createdAt, status: 'published' };
 }
 
-export async function probeHash(): Promise<Record<string, string>> {
-  const r: Record<string, string> = {};
-  const g = globalThis as unknown as { crypto?: { subtle?: unknown }; TextEncoder?: unknown };
-  r.hasCrypto = String(!!g.crypto);
-  r.hasSubtle = String(!!g.crypto?.subtle);
-  r.hasTextEncoder = String(!!g.TextEncoder);
-  try {
-    r.hash = await hashClientIp('1.2.3.4', 'probe-salt');
-  } catch (e) {
-    r.hashError = ((e as Error)?.name || 'err') + ':' + String((e as Error)?.message).slice(0, 150);
-  }
-  return r;
-}
-
-export async function probeWrite(): Promise<{ letters: string; limits: string }> {
-  const result = { letters: 'ok', limits: 'ok' };
-  try {
-    await repo.putLetter({
-      id: '__probe__', createdAt: new Date().toISOString(), locale: 'zh',
-      name: null, text: 'probe', status: 'published', source: 'web', version: 1,
-    });
-  } catch (e) {
-    result.letters = ((e as Error)?.name || 'err') + ':' + String((e as Error)?.message).slice(0, 120);
-  }
-  try {
-    await repo.writeWindow('letters/__probe.json', { count: 1, windowStart: Date.now() });
-  } catch (e) {
-    result.limits = ((e as Error)?.name || 'err') + ':' + String((e as Error)?.message).slice(0, 120);
-  }
-  return result;
-}
-
 export async function honeypotResult(): Promise<CreateLetterResult> {
   return { id: newId(), createdAt: new Date().toISOString(), status: 'published' };
 }
