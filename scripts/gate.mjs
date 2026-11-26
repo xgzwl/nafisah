@@ -284,10 +284,11 @@ async function onlineGates() {
       const cc = /cache-control:\s*no-cache/i.test(h);
       const delta = (b.match(/"type":"ai_response"/g) || []).length;
       const done = /\[DONE\]/.test(b);
-      // X-Accel-Buffering 本地 dev 会注入（甚至双份 no,no），但 EdgeOne 线上生产实测不带；
-      // 它只是防缓冲优化，缺失不影响 SSE 正确性，故记 advisory 不阻断。
+      // handler 设置了 X-Accel-Buffering: no（_shared.ts），本地 dev 可见双份 no,no，
+      // 但 EdgeOne 生产运行时会剥离此头（3 种请求形态实测）。仅防缓冲优化，
+      // 缺失不影响 SSE 正确性，故记 advisory 不阻断。
       const accel = /x-accel-buffering:\s*no/i.test(h);
-      const detail = `ct=${ct} cache=${cc} delta=${delta} done=${done} accel=${accel ? 'yes' : 'advisory(线上不注入)'}`;
+      const detail = `ct=${ct} cache=${cc} delta=${delta} done=${done} accel=${accel ? 'yes' : 'advisory(生产平台剥离)'}`;
       out = ct && cc && delta > 0 && done ? ok(detail) : no(detail);
     } catch (e) { out = no(e.message); }
     try { rmSync(dir, { recursive: true, force: true }); } catch { /* best effort */ }
