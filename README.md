@@ -15,7 +15,7 @@
 | `quotes.html` | 五句原著台词 |
 | `letters.html` | 三封写给他的信 |
 | `gallery.html` | 十二张氛围图，每格带图注和来源 |
-| `chat.html` | 与他说话：站内原生对话面板 |
+| `conversation.html` | 与他说话：站内原生对话面板（文件名避开 Agent 路由 `/chat`） |
 | `disclaimer.html` | 避雷、声明、素材来源与站主身份 |
 | `404.html` | 走失时的落脚处 |
 
@@ -40,7 +40,7 @@ python -m http.server 8899
 ```
 .
 ├── index.html / about.html / quotes.html / letters.html
-├── gallery.html / chat.html / disclaimer.html / 404.html
+├── gallery.html / conversation.html / disclaimer.html / 404.html
 ├── assets/
 │   ├── css/style.css          所有样式，单文件
 │   ├── js/i18n.js             三语字典与语言状态机

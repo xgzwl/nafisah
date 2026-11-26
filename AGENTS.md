@@ -13,7 +13,7 @@
 
 三语（en / zh / fr）同人站，8 个页面。静态展示层无构建步骤；F1–F3 功能层按需新增 `package.json` 与 EdgeOne Functions，仍无框架、无 CDN。**必要的外部链接允许**（见硬约束 7），但静态首屏不依赖外部资源。
 
-- 页面：`index` / `about` / `quotes` / `letters` / `gallery` / `chat` / `disclaimer` / `404`
+- 页面：`index` / `about` / `quotes` / `letters` / `gallery` / `conversation` / `disclaimer` / `404`（对话页文件名是 `conversation.html`，不是 `chat.html`——后者会遮蔽同名 Agent 路由 `/chat`）
 - 样式：`assets/css/style.css`（单文件）
 - 逻辑：`assets/js/i18n.js`（三语字典 + 状态机）、`assets/js/main.js`（reveal、导航、语言按钮）
 - 素材：`assets/img/*.webp`（12 张）、`assets/fonts/*.woff2`（34 个本地字体分片）
@@ -23,7 +23,7 @@
 
 ### 1. 八个页面的 header / footer 必须逐字一致
 
-每页 `.site-header` 与 `.site-footer` 整段与 `index.html` 完全相同，各页新增块字节数一致。改一处必须同步八处，改完做逐字 diff。新增 `chat.html` 后基线从 7 页变为 8 页。
+每页 `.site-header` 与 `.site-footer` 整段与 `index.html` 完全相同，各页新增块字节数一致。改一处必须同步八处，改完做逐字 diff。新增对话页后基线从 7 页变为 8 页（文件名 `conversation.html`，见上）。
 
 ### 2. i18n 三件套必须一起动
 
