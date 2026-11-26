@@ -1,9 +1,0 @@
-{
-  "name": "tom-riddle-shrine-esa",
-  "installCommand": "",
-  "buildCommand": "",
-  "assets": {
-    "directory": "./",
-    "notFoundStrategy": "404Page"
-  }
-}

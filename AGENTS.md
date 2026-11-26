@@ -11,19 +11,19 @@
 
 ## 项目性质
 
-纯静态三语（en / zh / fr）同人站，7 个页面，无构建步骤、无 `package.json`、无框架、无 CDN、无外部请求。**不要引入任何需要构建或联网的东西。**
+三语（en / zh / fr）同人站，8 个页面。静态展示层无构建步骤；F1–F3 功能层按需新增 `package.json` 与 EdgeOne Functions，仍无框架、无 CDN。**必要的外部链接允许**（见硬约束 7），但静态首屏不依赖外部资源。
 
-- 页面：`index` / `about` / `quotes` / `letters` / `gallery` / `disclaimer` / `404`
+- 页面：`index` / `about` / `quotes` / `letters` / `gallery` / `chat` / `disclaimer` / `404`
 - 样式：`assets/css/style.css`（单文件）
 - 逻辑：`assets/js/i18n.js`（三语字典 + 状态机）、`assets/js/main.js`（reveal、导航、语言按钮）
 - 素材：`assets/img/*.webp`（12 张）、`assets/fonts/*.woff2`（34 个本地字体分片）
-- 部署声明：`edgeone.json` / `esa.jsonc` / `.cnb.yml`
+- 部署声明：`edgeone.json` / `.cnb.yml`（单链路 EdgeOne Makers）
 
 ## 硬约束（改了就破，逐条有实测背书）
 
-### 1. 七个页面的 header / footer 必须逐字一致
+### 1. 八个页面的 header / footer 必须逐字一致
 
-每页 `.site-header` 与 `.site-footer` 整段与 `index.html` 完全相同，各页新增块字节数一致。改一处必须同步七处，改完做逐字 diff。
+每页 `.site-header` 与 `.site-footer` 整段与 `index.html` 完全相同，各页新增块字节数一致。改一处必须同步八处，改完做逐字 diff。新增 `chat.html` 后基线从 7 页变为 8 页。
 
 ### 2. i18n 三件套必须一起动
 
@@ -33,7 +33,7 @@
 2. **HTML 无脚本兜底同步更新**，且必须与英文字典逐字一致
 3. **`?v=` 版本串升级** —— 7 个页面的 `style.css?v=` 与 `i18n.js?v=` 都要升。不改版本串，浏览器会用缓存里的旧字典，新 key 在用户端等于不存在
 
-当前版本串：`20261125d`。
+当前版本串：`20261126a`（本轮新增 chat 页与文案后升级）。
 
 ### 3. `data-i18n` 只能挂叶子节点
 
@@ -59,9 +59,14 @@ Cinzel 把小写字母渲染成大写形态——看到「明明写小写却显�
 
 `<img>` 的 `width`/`height` 与 webp 实际像素逐一对应。首屏图用 `fetchpriority="high"`，其余用 `loading="lazy"`。
 
-### 7. 零外链
+### 7. 必要外链允许（原「零外链」已解除）
 
-不引入外部 URL、外部字体、外部脚本、外部 SVG。心形内联，字体本地，图片本地。素材许可范围 PD / CC0 / CC BY；CC BY 那张的署名在图注下方，不要删。
+用户已解除零外链约束。允许的外链：CC BY 署名链接、素材来源链接、模型网关服务端调用、确实需要的外部脚本/字体/资源。仍需守住的底线：
+
+- 静态首屏不依赖外链才能显示（心形仍内联、字体仍本地、图片仍本地）——这是加载可靠性，不是禁令
+- API Key 永不落前端，网关调用只在服务端
+- 素材许可范围 PD / CC0 / CC BY；CC BY 那张的署名在图注下方，不要删
+- 外部脚本若破坏 8 页 header/footer 一致性或 i18n 叶子规则，仍须退回
 
 ## 断点与布局红线
 
@@ -91,24 +96,21 @@ Cinzel 把小写字母渲染成大写形态——看到「明明写小写却显�
 
 ## 部署
 
-两套平台各有自己的部署源，**不是镜像关系，不要互换**：
+**单链路 EdgeOne Makers**（本轮已下线 ESA）：
 
 | 源仓库 | 部署平台 | 线上地址 | 配置文件 |
 | --- | --- | --- | --- |
 | CNB `origin` | EdgeOne Makers | https://nafisah.xgzwlkj.com/ | `edgeone.json` + `.cnb.yml` |
-| GitHub `github` | 阿里云 ESA | 待补充 | `esa.jsonc` |
 
 - **EdgeOne Makers**：源是 CNB。`edgeone.json` 声明纯静态构建（`buildCommand` / `installCommand` 为空，`outputDirectory: "."`）与缓存策略，优先级高于控制台设置。CNB 不支持原生 webhook，`.cnb.yml` 在 main push 时向 EdgeOne 发 POST——**这是正式部署链路的桥接件，必须保留**
-- **阿里云 ESA**：源是 GitHub。`esa.jsonc` 里构建与安装命令留空，资源目录为根目录，`notFoundStrategy: 404Page`
-
-往 CNB push 只触发 EdgeOne，往 GitHub push 只触发 ESA。同步代码时两个远端都要推。
+- **ESA 已下线**：`esa.jsonc` 已删除，GitHub 远端仅作代码备份、不再作为部署源。不要重建 ESA 配置或在文档中恢复双链路表述。
 
 缓存策略已按资源类型拆开：图片与字体一年 + `immutable`，CSS / JS / HTML 用 `no-cache`。这是为了修「一年缓存 + 无 hash 文件名导致用户永远拿到旧 CSS」的事故，不要改回去。
 
 ## Git 流程
 
-- 远端两个：`origin` = `https://cnb.cool/xgzwlkj/nafisah.git`，`github` = `https://github.com/xgzwl/nafisah.git`
-- 主干是 `main`；改动走分支 + PR，合并后两个远端都要推
+- 远端两个：`origin` = `https://cnb.cool/xgzwlkj/nafisah.git`（部署源），`github` = `https://github.com/xgzwl/nafisah.git`（代码备份，非部署源）
+- 主干是 `main`；改动走分支 + PR，合并后两个远端都要推（代码同步），但只有 `origin` 触发部署
 - 不要 amend 已推送的 commit，新起一个
 - `cnb pulls merge-pull` 的 `--commit-title` 必填
 - **`.workbuddy/` 不入库**，不要 add、不要加进 `.gitignore`（那是本机工作区记忆）

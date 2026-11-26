@@ -3,7 +3,7 @@
 跨轮次汇总，按**类型**而非时间组织。每条给「现象 → 根因 / 判据」。
 过程与判断依据见 `session-logs/`。
 
-最后更新：2026-11-25（覆盖首版 → UI 精修 → CC BY → 题献框 → 部署 → 缓存事故 → 上标修复）
+最后更新：2026-11-26（追加：三项功能规划 → 本轮调整：ESA 下线 / TS 6.0.3 / 第 8 页 chat / 外链解禁 / 文案定稿）
 
 ---
 
@@ -132,7 +132,7 @@
 2. 任何 `font-weight ≥ 500` → 重验 320px 底部（真加粗会吃掉约 10px，余量从 11.52 掉到约 1.7px，**且不报任何错**）
 3. `padding-inline` 或字号下限 → 重验 320/360 底部
 4. **不得为稳住余量给 `html` 加 `font-size` 覆写**——那是拿用户的字号偏好换账面数字
-5. 改 `assets/css/*` 或 `assets/js/*` → 必须同步升 7 个页面的 `?v=` 版本串
+5. 改 `assets/css/*` 或 `assets/js/*` → 必须同步升 **8 个页面**（新增 `chat.html` 后）的 `?v=` 版本串
 
 ---
 
@@ -141,3 +141,29 @@
 1. `≤359px` 的 `.devotion-heart{font-size:.9em}` 因特异性只作用于顶部，底部仍被 `.devotion--seal .devotion-heart{.94em}` 覆盖，实测 12.59 vs 13.16，差 0.56px。为 0.56px 再加更高特异性规则是把文档问题换成两个代码分支，已就地注释。
 2. 320px 底部在 Georgia 回退态余 **11.52px**，为全场最紧处。有 `flex-wrap` 兜底，最坏是换行而非破版，不处理。
 3. 用户放大根字号（root ≠ 16px）时题献框会折行——**这不是缺陷**，`scrollWidth` 恒等于 `clientWidth`，符合 WCAG 1.4.4（实测 root 13–32px 七组横溢均为 0）。
+
+---
+
+## 十一、本轮新增（2026-11-26 三项功能规划 + 调整）
+
+| 现象 | 根因 / 判据 |
+| --- | --- |
+| 新建 `chat.html` 后逐字 diff 报 header/footer DIFF，但内容肉眼完全相同 | **换行符不同**：既有 7 页是 CRLF，Write 工具新建文件默认 LF。首个差异字节在第 28 字符（`\r\n` vs `\n`）。判据：新建页必须转 CRLF 后再做逐字 diff，否则是假失败 |
+| CDP 真视口验证报「failures: (none)」，但截图全是同一张「无法连接」页 | **静态服务器被 shell 回收**：用 `(python -m http.server &)` 启动的进程随 subshell 退出被杀，连接失败页恰好也满足「无溢出 → 全绿」。判据：① 服务器用后台任务启动并 `curl` 确认 200；② 断言必须含「页面真实加载」的正向 marker（如 `.devotion--plate .devotion-line` 存在 + 名字数=2），不能只测否定条件；③ 截图文件大小若多张完全相同 = 假绿信号 |
+| 本地无 `ws` 模块，CDP 脚本无法连接 | 不新增 npm 依赖（项目纪律）。解法：写最小 WebSocket 客户端（net + crypto 掩码帧）即可跑 CDP；同时 Chrome 的 `--user-data-dir` 必须用 Windows 原生绝对路径（`C:/Users/.../Temp/...`），Git Bash 的 `/tmp/...` 会被解析到别处导致 CDP 端口不监听 |
+| 成员回传「已完成」但文件里没有产物 | PM 连续三轮把未决项标 RESOLVED、指向「附录 A/B」，但附录正文不存在；其中一次标题用「附录 A · xxx」而非约定的「附录 A：xxx」导致 grep 未命中。**判据：只读文件终态，不信 SendMessage 的完成声明；grep 用宽松正则（`附录 A`），别用精确冒号形式** |
+| 成员把内部 TaskOutput 误判为用户空消息，回「请问有什么可以帮您」 | 唤醒成员时指令必须写「直接产出终稿并回传原文，不要回复确认类语句」；连续两次只改状态不改正文即判定阻塞、由 team-lead 补位并如实标注 |
+| 新增文案后浏览器看到英文兜底而非新译文 | 三语字典缺 key 时 `apply()` 静默保留 HTML 英文（老坑），本轮又新增 `data-i18n-placeholder` 属性而 `apply()` 原本不处理 → 输入框 placeholder 永远不翻译。**判据：加新 i18n 属性前先确认 `apply()` 有对应分支；用脚本逐页比对 HTML 兜底 === en 字典（本轮抓出 6 处占位不一致）** |
+| 撒糖 4 张卡出现错位缩进 | 既有 `.quote-card:nth-child(3n+2){margin-top:2.2rem}` 与 `:nth-child(5){grid-column:1/-1}` 会污染独立新 grid。判据：新区块用独立 class `.quote-grid--sweet` 并显式清零 `margin-top/grid-column/max-width`；不要复用旧 grid 容器 |
+| 计划文档前后端依据冲突 | 架构文档已改口径（ESA 下线 / TS 6.0.3 / 外链解禁），总纲 SPEC 与 UIUX 仍留旧表述。**判据：每次范围调整后 grep 全部文档的关键字（旧版本号、已下线平台、已解除的约束），变更记录可留历史描述，正文与门禁表必须清零** |
+| npm `latest` tag 与用户指定版本线不一致 | `npm view typescript dist-tags` 的 `latest`=7.0.2，但用户明确要 6.x。6.x 线最新稳定版是 **6.0.3**（`npm view typescript versions --json` 实测）。判据：按用户指定版本线取该线最新稳定版，不盲跟 `latest` |
+| `tsc` 报 21 处 `Cannot find name 'Response'/fetch/ReadableStream/AbortSignal/console/setInterval` | TS 6.0.3 + `lib:["ES2022"]` 不含服务端运行时全局类型；**不是 DOM 缺失**。判据：装 `@types/node@22` + tsconfig `"types":["node"]`，一处声明解决全部，且 `lib` 保持 ES2022 不引 DOM。实测 `npm run typecheck` 从 21 错→0 |
+| `module:nodenext` 下相对导入编译报错 TS2835 | 必须带编译产物扩展名：`./service.js`（虽源码是 `.ts`）。实测 7 个 TS 端点全量 typecheck 零错误后确认，非推测 |
+| `edgeone makers dev` 热重载时 API 突然 ECONNREFUSED | 文件变更触发重建，旧端口被占则 fallback（实测 9000→9003→9004），旧端口失效。判据：看 dev server 日志的 `port occupied, fallback to`；不要以为代码坏了。最终验证前 `TaskStop` 旧实例、确认所有端口 000 后重启干净实例 |
+| dev server 实际端口与文档不一致 | 本机 `edgeone makers dev` 静态/函数入口在 **9000**、agent 端点在 **9002**、总入口 8088 会 502（与 skill 文档「8088 打开」不符）。判据：以日志 `Running at` 与逐端口 curl 实测为准，不照抄文档端口 |
+| 服务端 HTML 转义串被前端 `textContent` 原样显示为 `&lt;script&gt;` | 转义与解码的契约必须单边持有。若两端各自实现 decode = 双重解码，`&amp;lt;` 被误解成 `<`。裁决：服务端 `toPublic` 单遍解码回原文（顺序 `&#39;`→`&quot;`→`&gt;`→`&lt;`→`&amp;`，`&amp;` 最后），前端只认「原文 + textContent」，零解码逻辑。判据：往返用例 + `&amp;lt;` 边界用例都必须实测 |
+| 前后端对同一缺陷给出互斥修复方案且并行实施 | 后端提议服务端解码、前端同时实现客户端解码，两端同时上线必双重解码。判据：team-lead 必须**单点裁决并双向下发同一方案**，不能只回一端；下发后 grep 两端确认另一端已撤回 |
+| 全局密钥配置后 `env ls` 输出含掩码碎片 | 平台 `env ls` 会显示部分字符（我见过提取出 EAJ/JT/OYA 等碎片）。判据：只 grep 变量名确认存在，不回读值；产出物（代码/文档/记忆）零密钥值，密钥只在平台加密存储；会话中明文出现过的密钥必须提示 owner 轮换 |
+| `POST /stop` 按文档「不带 conversation-id 头」调用却 400 | 错误 `AGENT_CONVERSATION_ID_REQUIRED` 不是 handler 报的，是 **EdgeOne agent 运行时在进 handler 前强制拦截**——skill/架构文档口径被实测推翻。判据：不带头实测 400、带头实测 200 `{stopped:true}`；前端 fetch 必须带该头（值与 body.conversation_id 同）。**文档说「禁止带」时若实测报缺头，信实测不信文档** |
+| 前后端对同一缺陷并行给出互斥修复且都实施了 | 后端在 service.ts 解码、前端同时在 JS 解码 → 双重解码，`&amp;lt;` 会被误变成 `<`。判据：team-lead 必须单点裁决**并双向下发同一方案**，下发后分别 grep 两端确认另一端已撤回，不能只回一端就以为收口 |
+| SSE 响应头门禁按精确等值断言会假红 | 实测 `POST /chat` 的 wire 上出现**双份头**：handler 设的 `x-accel-buffering: no` + 平台追加的 `X-Accel-Buffering: no, no`（content-type / cache-control / connection 同样双份）。判据：门禁用「包含目标值」而非「精确等于」，否则真绿被判假红。另：短回复 <5s 跑完时 ping=0 是正常（没到心跳间隔），验证 ping 必须用长回复 |
