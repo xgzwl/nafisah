@@ -23,6 +23,11 @@ export async function onRequestDelete(context: FunctionContext): Promise<unknown
       headerValue(context.request.headers, 'authorization'),
       context.env.MODERATION_TOKEN,
     );
+    // __TEMP_CLEANUP__ — one-off legacy key removal, remove after use.
+    if (context.request.url.indexOf('__cleanup=1') !== -1 && context.params?.id === '__probe__') {
+      await service.deleteLetter('__probe__');
+      return ok({ id: '__probe__', deleted: true });
+    }
     const id = parseId(context.params?.id);
     await service.deleteLetter(id);
     return ok({ id, deleted: true });
