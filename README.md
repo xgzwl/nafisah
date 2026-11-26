@@ -4,6 +4,8 @@
 
 页面顶部的题献带和底部藏书票框写着同一句话：**Nafisah Riddle ♥ Tom Riddle**。
 
+**线上地址：https://nafisah.xgzwlkj.com/** （EdgeOne Makers，源仓库为 CNB）
+
 ## 页面
 
 | 页面 | 内容 |
@@ -67,10 +69,10 @@ python -m http.server 8899
 
 两个远端各自对应一个平台，**不是镜像关系，也不能互换**：
 
-| 源仓库 | 部署平台 | 配置文件 |
-| --- | --- | --- |
-| CNB `xgzwlkj/nafisah`（`origin`） | EdgeOne Makers | `edgeone.json` + `.cnb.yml` |
-| GitHub `xgzwl/nafisah`（`github`） | 阿里云 ESA | `esa.jsonc` |
+| 源仓库 | 部署平台 | 线上地址 | 配置文件 |
+| --- | --- | --- | --- |
+| CNB `xgzwlkj/nafisah`（`origin`） | EdgeOne Makers | https://nafisah.xgzwlkj.com/ | `edgeone.json` + `.cnb.yml` |
+| GitHub `xgzwl/nafisah`（`github`） | 阿里云 ESA | 待补充 | `esa.jsonc` |
 
 往 CNB push 只触发 EdgeOne，往 GitHub push 只触发 ESA。两边都要推，各管各的线上环境。
 

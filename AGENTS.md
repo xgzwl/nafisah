@@ -93,10 +93,10 @@ Cinzel 把小写字母渲染成大写形态——看到「明明写小写却显�
 
 两套平台各有自己的部署源，**不是镜像关系，不要互换**：
 
-| 源仓库 | 部署平台 | 配置文件 |
-| --- | --- | --- |
-| CNB `origin` | EdgeOne Makers | `edgeone.json` + `.cnb.yml` |
-| GitHub `github` | 阿里云 ESA | `esa.jsonc` |
+| 源仓库 | 部署平台 | 线上地址 | 配置文件 |
+| --- | --- | --- | --- |
+| CNB `origin` | EdgeOne Makers | https://nafisah.xgzwlkj.com/ | `edgeone.json` + `.cnb.yml` |
+| GitHub `github` | 阿里云 ESA | 待补充 | `esa.jsonc` |
 
 - **EdgeOne Makers**：源是 CNB。`edgeone.json` 声明纯静态构建（`buildCommand` / `installCommand` 为空，`outputDirectory: "."`）与缓存策略，优先级高于控制台设置。CNB 不支持原生 webhook，`.cnb.yml` 在 main push 时向 EdgeOne 发 POST——**这是正式部署链路的桥接件，必须保留**
 - **阿里云 ESA**：源是 GitHub。`esa.jsonc` 里构建与安装命令留空，资源目录为根目录，`notFoundStrategy: 404Page`
