@@ -29,6 +29,20 @@ python -m http.server 8899
 
 然后打开 `http://localhost:8899/`。直接双击 HTML 也能看，但某些浏览器会拦本地字体。
 
+## 上线门禁
+
+新上线前按阶段跑，全绿再推进：
+
+```bash
+npm run gate:local    # 提交前：类型/i18n/8页一致/版本串/P0/密钥零入库/两端同步
+git push origin main  # CNB 部署源（GitHub 也要推）
+npm run gate:deploy   # 推送后：查 CNB 构建状态 + EdgeOne 拉取（按时间戳，不盲等）
+npm run gate:online   # 部署生效后：F2/F3/审核/SSE/源码泄漏全链路实测
+npm run gate          # 全部一起跑
+```
+
+依赖只有 `node` / `git` / `curl` / `cnb` CLI。线上门禁会自建测试信并在结束时用审核端点清理；需要本地 `.env` 的 `MODERATION_TOKEN` 才能清理，缺失时该项标 SKIP。要测本地 dev 服务用 `GATE_SITE=http://127.0.0.1:8088 npm run gate:online`。
+
 ## 语言切换
 
 页面右上角有 `中 / EN / FR` 三个按钮。语言状态同时存在 `localStorage` 和 URL 的 `?lang=` 参数里，所以可以直接分享 `gallery.html?lang=fr` 这样的链接。跨页跳转会自动带上当前语言。

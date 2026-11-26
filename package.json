@@ -4,7 +4,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "typecheck": "tsc --noEmit -p tsconfig.json"
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "gate": "node scripts/gate.mjs",
+    "gate:local": "node scripts/gate.mjs local",
+    "gate:deploy": "node scripts/gate.mjs deploy",
+    "gate:online": "node scripts/gate.mjs online"
   },
   "dependencies": {
     "@edgeone/pages-blob": "^0.0.14"
