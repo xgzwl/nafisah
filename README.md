@@ -58,9 +58,17 @@ npm run gate          # 全部一起跑
 ├── assets/
 │   ├── css/style.css          所有样式，单文件
 │   ├── js/i18n.js             三语字典与语言状态机
-│   ├── js/main.js             滚动显现、导航标记、语言按钮
+│   ├── js/main.js             滚动显现、导航标记、语言按钮、阅读进度
+│   ├── js/gallery.js          图库分组筛选 + 灯箱
+│   ├── js/letters.js          写信表单 + 信墙（按语言筛选、翻页）
+│   ├── js/chat.js             对话（复制回复、清空会话）
+│   ├── js/entmesh.js          统计 SDK 接入（失败静默）
+│   ├── js/pwa.js              Service Worker 注册（失败静默）
 │   ├── img/*.webp             12 张氛围图
 │   └── fonts/*.woff2          12 个拉丁 + 22 个中文分片
+├── manifest.webmanifest       PWA 清单
+├── icon.svg                   PWA 图标（心形）
+├── sw.js                      Service Worker（HTML 网络优先，资源缓存兜底）
 ├── edgeone.json               EdgeOne Makers 构建与缓存配置（CNB 源）
 ├── .cnb.yml                   CNB → EdgeOne 的 webhook 流水线
 ├── AGENTS.md                  给 AI agent 的工作规范
@@ -68,6 +76,12 @@ npm run gate          # 全部一起跑
     ├── PITFALLS.md            按现象组织的踩坑清单
     └── session-logs/          按时间记录的开发日志
 ```
+
+## 交互增强
+
+三语页面顶部有阅读进度条。信墙可按语言筛选（全部／中／英／法）并翻页；图库可按主题分组浏览，点图打开灯箱（键盘左右切换、Esc 关闭）。对话页可复制每条回复、清空整段会话。这些按钮带 `data-entmesh-label`，统计脚本会记录点击但不采集正文。
+
+页面注册了 Service Worker 做离线兜底：**HTML 走网络优先**（保证 `?v=` 版本串升级立即生效），图片字体缓存优先，其他静态资源网络优先、断网时回退缓存；`/api/`、`/chat`、`/stop` 等请求一律不缓存。PWA 注册与 SDK 加载都失败静默，不影响首屏。
 
 ## 实现上的几个选择
 

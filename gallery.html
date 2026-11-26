@@ -1,14 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-page-title="gallery.title">
 <head>
   <meta charset="utf-8">
+  <meta name="description" content="Twelve atmospheric images — old studies, silver, roses and ink — held in a green and gold frame.">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Tom Marvolo Riddle · a private shrine</title>
-  <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="assets/css/style.css?v=20261126c">
-  <script src="assets/js/i18n.js?v=20261126c" defer></script>
-  <script src="assets/js/main.js" defer></script>
-  <script src="assets/js/entmesh.js?v=20261126c" defer></script>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 22'%3E%3Cpath d='M12 6.2C10.9 3.1 9.1 2.1 7.1 2.1 4.4 2.1 2.4 4.3 2.4 7.2c0 2.7 1.6 4.7 3.4 6.5L12 20l6.2-6.3c1.8-1.8 3.4-3.8 3.4-6.5 0-2.9-2-5.1-4.7-5.1-2 0-3.8 1-4.9 4.1z' fill='none' stroke='%23b08d57' stroke-width='2'/%3E%3C/svg%3E">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#0e1a17">
+  <link rel="stylesheet" href="assets/css/style.css?v=20261126g">
+  <script src="assets/js/i18n.js?v=20261126g" defer></script>
+  <script src="assets/js/main.js?v=20261126g" defer></script>
+  <script src="assets/js/entmesh.js?v=20261126g" defer></script>
+  <script src="assets/js/pwa.js?v=20261126g" defer></script>
+  <script src="assets/js/gallery.js?v=20261126g" defer></script>
 </head>
 <body id="top">
   <a class="skip-link" href="#main" data-i18n="common.skip">Skip to content</a>
@@ -39,9 +44,9 @@
         <a href="disclaimer.html" data-internal data-nav data-i18n="nav.disclaimer">Notes</a>
       </nav>
       <div class="lang-switch" role="group" aria-label="Language" data-i18n-aria="lang.group">
-        <button type="button" data-lang-btn="zh" aria-pressed="false" aria-label="Chinese" data-i18n-aria="lang.zh">中</button>
-        <button type="button" data-lang-btn="en" aria-pressed="true" aria-label="English" data-i18n-aria="lang.en">EN</button>
-        <button type="button" data-lang-btn="fr" aria-pressed="false" aria-label="French" data-i18n-aria="lang.fr">FR</button>
+        <button type="button" data-lang-btn="zh" data-entmesh-label="lang_zh" aria-pressed="false" aria-label="Chinese" data-i18n-aria="lang.zh">中</button>
+        <button type="button" data-lang-btn="en" data-entmesh-label="lang_en" aria-pressed="true" aria-label="English" data-i18n-aria="lang.en">EN</button>
+        <button type="button" data-lang-btn="fr" data-entmesh-label="lang_fr" aria-pressed="false" aria-label="French" data-i18n-aria="lang.fr">FR</button>
       </div>
     </div>
   </header>
@@ -54,51 +59,51 @@
     </div>
 
     <div class="gallery-grid">
-      <figure class="gallery-item reveal">
+      <figure class="gallery-item reveal" data-group="study">
         <img src="assets/img/banner-interior.webp" alt="A dim room with framed pictures on the wall and a metal samovar on a round table" width="768" height="1152" loading="lazy" data-i18n-alt="g1.alt">
         <figcaption class="gallery-caption"><h2 data-i18n="g1.cap">The candlelit study</h2><p data-i18n="g1.note">Where the evening begins</p></figcaption>
       </figure>
-      <figure class="gallery-item reveal">
+      <figure class="gallery-item reveal" data-group="objects">
         <img src="assets/img/thumb-silver.webp" alt="A polished silver cup catching a narrow highlight" width="1280" height="1728" loading="lazy" data-i18n-alt="g4.alt">
         <figcaption class="gallery-caption"><h2 data-i18n="g4.cap">Silver in the dark</h2><p data-i18n="g4.note">A small, cold light</p></figcaption>
       </figure>
-      <figure class="gallery-item reveal">
+      <figure class="gallery-item reveal" data-group="botanical">
         <img src="assets/img/thumb-rose.webp" alt="A single dark red rose against a shadowed ground" width="800" height="1068" loading="lazy" data-i18n-alt="g3.alt">
         <figcaption class="gallery-caption"><h2 data-i18n="g3.cap">A rose after midnight</h2><p data-i18n="g3.note">Dark, but not severe</p></figcaption>
       </figure>
-      <figure class="gallery-item reveal" data-ratio="wide">
+      <figure class="gallery-item reveal" data-ratio="wide" data-group="study">
         <img src="assets/img/content-bookshelves.webp" alt="Tall wooden shelves holding rows of worn books" width="1400" height="1163" loading="lazy" data-i18n-alt="g2.alt">
         <figcaption class="gallery-caption"><h2 data-i18n="g2.cap">The old shelves</h2><p data-i18n="g2.note">Books that remember hands</p></figcaption>
       </figure>
-      <figure class="gallery-item reveal">
+      <figure class="gallery-item reveal" data-group="paper">
         <img src="assets/img/thumb-archive.webp" alt="Sheets of paper spread across an old writing desk" width="1280" height="1096" loading="lazy" data-i18n-alt="g5.alt">
         <figcaption class="gallery-caption"><h2 data-i18n="g5.cap">Ink and memory</h2><p data-i18n="g5.note">The archive of a quiet room</p></figcaption>
       </figure>
-      <figure class="gallery-item reveal">
+      <figure class="gallery-item reveal" data-group="objects">
         <img src="assets/img/thumb-still-life.webp" alt="A small arrangement of objects in soft, fading light" width="1280" height="1545" loading="lazy" data-i18n-alt="g6.alt">
         <figcaption class="gallery-caption"><h2 data-i18n="g6.cap">Still life with light</h2><p data-i18n="g6.note">Objects left behind</p></figcaption>
       </figure>
-      <figure class="gallery-item reveal">
+      <figure class="gallery-item reveal" data-group="paper">
         <img src="assets/img/thumb-ink-bottle.webp" alt="A faceted glass bottle filled with dark ink" width="1400" height="1617" loading="lazy" data-i18n-alt="g7.alt">
         <figcaption class="gallery-caption"><h2 data-i18n="g7.cap">Bottle of ink</h2><p data-i18n="g7.note">A small dark pool</p></figcaption>
       </figure>
-      <figure class="gallery-item reveal" data-ratio="wide">
+      <figure class="gallery-item reveal" data-ratio="wide" data-group="paper">
         <img src="assets/img/thumb-inkwell-19c.webp" alt="A cut-crystal inkwell with a gold-toned lid" width="1400" height="1209" loading="lazy" data-i18n-alt="g8.alt">
         <figcaption class="gallery-caption"><h2 data-i18n-html="g8.cap">A nineteenth-century inkwell</h2><p data-i18n="g8.note">The desk of another era</p></figcaption>
       </figure>
-      <figure class="gallery-item reveal">
+      <figure class="gallery-item reveal" data-group="botanical">
         <img src="assets/img/thumb-rose-redoute.webp" alt="A hand-coloured engraving of rose blossoms and leaves" width="1280" height="1732" loading="lazy" data-i18n-alt="g9.alt">
         <figcaption class="gallery-caption"><h2 data-i18n="g9.cap">Redouté's rose</h2><p data-i18n="g9.note">Ink pressed into paper</p></figcaption>
       </figure>
-      <figure class="gallery-item reveal">
+      <figure class="gallery-item reveal" data-group="study">
         <img src="assets/img/thumb-gilt-library.webp" alt="Tall gilt bookcases holding rows of leather books, with a long polished table in front" width="768" height="960" loading="lazy" data-i18n-alt="g10.alt">
         <figcaption class="gallery-caption"><h2 data-i18n="g10.cap">The gilt cases</h2><p data-i18n="g10.note">Gold leaf, worn leather</p><span class="gallery-credit">Trishhhh · CC BY 2.0</span></figcaption>
       </figure>
-      <figure class="gallery-item reveal">
+      <figure class="gallery-item reveal" data-group="objects">
         <img src="assets/img/thumb-silver-beaker.webp" alt="A hammered silver beaker with a flared rim" width="600" height="600" loading="lazy" data-i18n-alt="g11.alt">
         <figcaption class="gallery-caption"><h2 data-i18n="g11.cap">Silver at rest</h2><p data-i18n="g11.note">A cold, patient gleam</p></figcaption>
       </figure>
-      <figure class="gallery-item reveal" data-ratio="wide">
+      <figure class="gallery-item reveal" data-ratio="wide" data-group="study">
         <img src="assets/img/thumb-candle-flame.webp" alt="A candle burning in a shallow wax-filled dish" width="1400" height="1050" loading="lazy" data-i18n-alt="g12.alt">
         <figcaption class="gallery-caption"><h2 data-i18n="g12.cap">A quiet flame</h2><p data-i18n="g12.note">Light kept for the page</p></figcaption>
       </figure>

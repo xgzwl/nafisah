@@ -9,6 +9,9 @@
     send: "M3 5h18v14H3zM3 6l9 7 9-7",
     stop: "M6 6h12v12H6z",
     retry: "M20 12a8 8 0 1 1-2.3-5.7M20 4v5h-5",
+    copy: "M9 9h11v11H9zM5 15H4V4h11v1",
+    check: "M4 12l5 5L20 6",
+    trash: "M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13",
     heart: "M12 6.2C10.9 3.1 9.1 2.1 7.1 2.1 4.4 2.1 2.4 4.3 2.4 7.2c0 2.7 1.6 4.7 3.4 6.5L12 20l6.2-6.3c1.8-1.8 3.4-3.8 3.4-6.5 0-2.9-2-5.1-4.7-5.1-2 0-3.8 1-4.9 4.1z"
   };
   var FALLBACK = {
@@ -130,6 +133,60 @@
     autoScroll();
     return para;
   }
+  function copyText(text) {
+    function done() {
+      status.textContent = t("chat.copied");
+    }
+    if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+      navigator.clipboard.writeText(text).then(done).catch(function () { fallbackCopy(text, done); });
+    } else {
+      fallbackCopy(text, done);
+    }
+  }
+  function fallbackCopy(text, done) {
+    var helper = el("textarea", "sr-only");
+    helper.value = text;
+    helper.setAttribute("readonly", "");
+    document.body.appendChild(helper);
+    helper.select();
+    try { document.execCommand("copy"); done(); } catch (error) {}
+    document.body.removeChild(helper);
+  }
+  function addCopyButton(text) {
+    var wrap = output && output.parentNode;
+    if (!wrap || !text) return;
+    var btn = el("button", "chat-msg-action");
+      btn.type = "button";
+      btn.setAttribute("aria-label", t("chat.copy"));
+      btn.setAttribute("data-entmesh-label", "chat_copy");
+      btn.appendChild(icon("copy"));
+    btn.appendChild(leaf("span", "", "chat.copy"));
+    btn.addEventListener("click", function () {
+      copyText(text);
+      var span = btn.querySelector("span");
+      if (span) { span.textContent = t("chat.copied"); window.setTimeout(function () { span.textContent = t("chat.copy"); }, 1800); }
+    });
+    wrap.appendChild(btn);
+  }
+  function clearConversation() {
+    if (busy) return;
+    history = [];
+    lastText = "";
+    fullText = "";
+    output = null;
+    historyNoted = false;
+    stick = true;
+    finished = true;
+    var msgs = log.querySelectorAll(".chat-msg, .chat-system");
+    Array.prototype.forEach.call(msgs, function (node) { node.remove(); });
+    var intro = log.querySelector(".chat-intro");
+    if (intro) intro.hidden = false;
+    if (jump) jump.hidden = true;
+    log.scrollTop = 0;
+    try { window.localStorage.removeItem(STORAGE_KEY); } catch (error) {}
+    status.textContent = t("chat.cleared");
+    try { input.focus({ preventScroll: true }); } catch (error) { input.focus(); }
+  }
   function showRetry(kind) {
     var node = note("chat.error." + kind);
     var retry = el("button", "btn btn-ghost");
@@ -171,6 +228,7 @@
     }
     if (doneFlag && !failed) {
       commit();
+      addCopyButton(fullText);
       status.textContent = fullText;
       try { input.focus({ preventScroll: true }); } catch (error) { input.focus(); }
       return;
@@ -317,6 +375,17 @@
 
     if (sendBtn && !sendBtn.querySelector("svg")) sendBtn.insertBefore(icon("send"), sendBtn.firstChild);
     if (stopBtn && !stopBtn.querySelector("svg")) stopBtn.insertBefore(icon("stop"), stopBtn.firstChild);
+    var actions = form.querySelector(".chat-actions");
+    if (actions) {
+      var clearBtn = el("button", "btn btn-ghost chat-clear");
+      clearBtn.type = "button";
+      clearBtn.setAttribute("aria-label", t("chat.clear"));
+      clearBtn.setAttribute("data-entmesh-label", "chat_clear");
+      clearBtn.appendChild(icon("trash"));
+      clearBtn.appendChild(leaf("span", "", "chat.clear"));
+      clearBtn.addEventListener("click", clearConversation);
+      actions.appendChild(clearBtn);
+    }
     jump = el("button", "btn btn-ghost chat-jump");
     jump.type = "button";
     jump.hidden = true;

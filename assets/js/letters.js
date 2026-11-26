@@ -190,6 +190,7 @@
     var submit = el("button", "btn");
     submit.type = "submit";
     submit.id = "letter-submit";
+    submit.setAttribute("data-entmesh-label", "letter_submit");
     submit.appendChild(icon("send"));
     submit.appendChild(leaf("span", "", "letter.form.submit"));
     form.appendChild(submit);
@@ -219,6 +220,23 @@
     frag.appendChild(leaf("h2", "", "letter.wall.title"));
     frag.appendChild(leaf("p", "lead", "letter.wall.lead"));
     frag.appendChild(leaf("p", "muted small", "letter.wall.note"));
+    var filter = el("div", "wall-filter");
+    filter.id = "wall-filter";
+    filter.setAttribute("role", "group");
+    filter.setAttribute("aria-label", t("letter.wall.filter.label"));
+    filter.setAttribute("data-i18n-aria", "letter.wall.filter.label");
+    [["all", "letter.wall.filter.all"], ["zh", "letter.wall.filter.zh"],
+     ["en", "letter.wall.filter.en"], ["fr", "letter.wall.filter.fr"]].forEach(function (pair) {
+      var btn = el("button", "wall-filter-btn");
+      btn.type = "button";
+      btn.setAttribute("data-locale", pair[0]);
+      btn.setAttribute("data-entmesh-label", "letter_filter_" + pair[0]);
+      btn.setAttribute("aria-pressed", pair[0] === filterLocale ? "true" : "false");
+      btn.appendChild(leaf("span", "", pair[1]));
+      filter.appendChild(btn);
+    });
+    filterBar = filter;
+    frag.appendChild(filter);
     var list = el("div", "letter-stack");
     list.id = "wall-list";
     list.setAttribute("aria-busy", "false");
@@ -307,7 +325,8 @@
   var hasMore = false;
   var loading = false;
   var busy = false;
-  var list, more;
+  var filterLocale = "all";
+  var list, more, filterBar;
 
   function showBanner(kind) {
     var banner = document.getElementById("letter-banner");
@@ -332,7 +351,11 @@
       skeleton.setAttribute("data-wall-status", "loading");
       list.appendChild(skeleton);
     }
-    fetch("/api/letters?page=" + nextPage + "&limit=50&locale=" + encodeURIComponent(lang()), {
+    var url = "/api/letters?page=" + nextPage + "&limit=50";
+    /* "all" omits locale so the API returns every language; the backend treats
+       an absent locale as no filter. */
+    if (filterLocale !== "all") url += "&locale=" + encodeURIComponent(filterLocale);
+    fetch(url, {
       credentials: "same-origin",
       headers: { Accept: "application/json" }
     }).then(function (res) {
@@ -476,6 +499,20 @@
       body.focus();
     });
     more.addEventListener("click", function () { loadWall(page + 1); });
+
+    if (filterBar) {
+      filterBar.querySelectorAll("[data-locale]").forEach(function (button) {
+        button.addEventListener("click", function () {
+          var next = button.getAttribute("data-locale");
+          if (next === filterLocale || loading) return;
+          filterLocale = next;
+          filterBar.querySelectorAll("[data-locale]").forEach(function (b) {
+            b.setAttribute("aria-pressed", b === button ? "true" : "false");
+          });
+          loadWall(1);
+        });
+      });
+    }
     loadWall(1);
   }
 

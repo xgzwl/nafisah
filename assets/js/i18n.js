@@ -18,6 +18,11 @@
       "footer.lang": "Language",
       "common.backTop": "Back to top",
       "common.skip": "Skip to content",
+      "lightbox.open": "View image full size",
+      "lightbox.close": "Close image",
+      "lightbox.prev": "Previous image",
+      "lightbox.next": "Next image",
+      "lightbox.counter": "Image {{current}} of {{total}}",
       "lang.zh": "Chinese",
       "lang.en": "English",
       "lang.fr": "French",
@@ -115,6 +120,22 @@
       "letter.wall.error": "The shelf could not be read. Please try again.",
       "letter.wall.from": "from",
       "letter.wall.more": "Show earlier letters",
+      "letter.wall.filter.label": "Filter letters by language",
+      "letter.wall.filter.all": "All languages",
+      "letter.wall.filter.zh": "Chinese",
+      "letter.wall.filter.en": "English",
+      "letter.wall.filter.fr": "French",
+      "chat.copy": "Copy reply",
+      "chat.copied": "Reply copied",
+      "chat.clear": "Clear conversation",
+      "chat.cleared": "The page is fresh again.",
+      "gallery.filter.label": "Filter images by theme",
+      "gallery.group.all": "All",
+      "gallery.group.study": "Studies & shelves",
+      "gallery.group.botanical": "Roses",
+      "gallery.group.objects": "Silver & still life",
+      "gallery.group.paper": "Ink & paper",
+      "common.readProgress": "Reading progress",
       "letter.wall.note": "Letters appear as written, in their original language.",
       "chat.stopped": "Stopped.",
       "chat.retry": "Try again",
@@ -188,7 +209,7 @@
       "dis.bio": "This shrine belongs to Nafisah Riddle — a self-insert who has placed herself in Tom Riddle's story, and writes to him from here.",
       "dis.2": "Please turn away if the same name or another pairing would trouble you.",
       "dis.3": "The tone stays gentle. There is no explicit content, no violence and no advertising.",
-      "dis.analytics": "A small analytics script counts page views to help us understand which notes are read. It collects technical data such as browser language, time zone and screen size; it does not read the letters, the chat messages or your name.",
+      "dis.analytics": "A small analytics script counts page views and button clicks (language, filters, opening an image, copying or clearing a conversation) so we can see which parts of the shrine are used. It collects technical data such as browser language, time zone and screen size; it does not read the letters, the chat messages or your name.",
       "dis.4": "Atmospheric images come from Wikimedia Commons and museum Open Access collections, mostly public domain or CC0; one is used under CC BY 2.0, cropped to fit and credited beneath its caption. Typefaces are Newsreader, Spectral, Cinzel, Cinzel Decorative, Cormorant Infant, Cormorant Garamond and LXGW WenKai, all under the SIL Open Font License.",
       "dis.footer": "Made for a quiet reader.",
 
@@ -213,6 +234,11 @@
       "footer.lang": "语言",
       "common.backTop": "回到顶部",
       "common.skip": "跳到正文",
+      "lightbox.open": "放大查看图片",
+      "lightbox.close": "关闭图片",
+      "lightbox.prev": "上一张图片",
+      "lightbox.next": "下一张图片",
+      "lightbox.counter": "第 {{current}} 张，共 {{total}} 张",
       "lang.zh": "中文",
       "lang.en": "英语",
       "lang.fr": "法语",
@@ -310,6 +336,22 @@
       "letter.wall.error": "书架读不出来。请再试一次。",
       "letter.wall.from": "来自",
       "letter.wall.more": "显示更早的信",
+      "letter.wall.filter.label": "按语言筛选信件",
+      "letter.wall.filter.all": "全部语言",
+      "letter.wall.filter.zh": "中文",
+      "letter.wall.filter.en": "英语",
+      "letter.wall.filter.fr": "法语",
+      "chat.copy": "复制回复",
+      "chat.copied": "已复制回复",
+      "chat.clear": "清空对话",
+      "chat.cleared": "这一页又干净了。",
+      "gallery.filter.label": "按主题筛选图片",
+      "gallery.group.all": "全部",
+      "gallery.group.study": "书房与书架",
+      "gallery.group.botanical": "玫瑰",
+      "gallery.group.objects": "银器与静物",
+      "gallery.group.paper": "墨水与纸",
+      "common.readProgress": "阅读进度",
       "letter.wall.note": "来信按原文展示，不翻译。",
       "chat.stopped": "已停止。",
       "chat.retry": "再试一次",
@@ -383,7 +425,7 @@
       "dis.bio": "这座神龛属于 Nafisah Riddle——一个把自己写进 Tom Riddle 故事里的梦女，在这里给他写信。",
       "dis.2": "若雷同梦或其他 CP 会让你不适，请自行避雷。",
       "dis.3": "全站保持克制，无露骨内容、无血腥暴力、无商业广告。",
-      "dis.analytics": "站内有一个轻量的统计脚本，只记录页面浏览，用来了解哪些文字被读到。它会采集浏览器语言、时区与屏幕尺寸等技术信息，但不会读取信件正文、聊天内容或你的署名。",
+      "dis.analytics": "站内有一个轻量的统计脚本，记录页面浏览与按钮点击（切换语言、筛选、放大图片、复制或清空对话），用来了解神龛的哪些部分被使用。它会采集浏览器语言、时区与屏幕尺寸等技术信息，但不会读取信件正文、聊天内容或你的署名。",
       "dis.4": "氛围图片来自 Wikimedia Commons 与博物馆开放馆藏，多为公有领域或 CC0；其中一张依 CC BY 2.0 使用，经裁切并在图注下方标明作者与许可。字体为 Newsreader、Spectral、Cinzel、Cinzel Decorative、Cormorant Infant、Cormorant Garamond 与霞鹜文楷，均遵循 SIL 开源字体许可。",
       "dis.footer": "写给一位安静的读者。",
 
@@ -408,6 +450,11 @@
       "footer.lang": "Langue",
       "common.backTop": "Retour en haut",
       "common.skip": "Aller au contenu",
+      "lightbox.open": "Voir l'image en grand",
+      "lightbox.close": "Fermer l'image",
+      "lightbox.prev": "Image précédente",
+      "lightbox.next": "Image suivante",
+      "lightbox.counter": "Image {{current}} sur {{total}}",
       "lang.zh": "Chinois",
       "lang.en": "Anglais",
       "lang.fr": "Français",
@@ -505,6 +552,22 @@
       "letter.wall.error": "Je n'ai pas pu lire l'étagère. Veuillez réessayer.",
       "letter.wall.from": "de",
       "letter.wall.more": "Afficher les lettres précédentes",
+      "letter.wall.filter.label": "Filtrer les lettres par langue",
+      "letter.wall.filter.all": "Toutes les langues",
+      "letter.wall.filter.zh": "Chinois",
+      "letter.wall.filter.en": "Anglais",
+      "letter.wall.filter.fr": "Français",
+      "chat.copy": "Copier la réponse",
+      "chat.copied": "Réponse copiée",
+      "chat.clear": "Effacer la conversation",
+      "chat.cleared": "La page est de nouveau nette.",
+      "gallery.filter.label": "Filtrer les images par thème",
+      "gallery.group.all": "Toutes",
+      "gallery.group.study": "Cabinets & étagères",
+      "gallery.group.botanical": "Roses",
+      "gallery.group.objects": "Argenterie & natures mortes",
+      "gallery.group.paper": "Encre & papier",
+      "common.readProgress": "Progression de lecture",
       "letter.wall.note": "Les lettres sont affichées telles qu'écrites, dans leur langue d'origine.",
       "chat.stopped": "Arrêté.",
       "chat.retry": "Réessayer",
@@ -578,7 +641,7 @@
       "dis.bio": "Ce sanctuaire appartient à Nafisah Riddle — une rêveuse qui s'est glissée dans l'histoire de Tom Riddle et lui écrit d'ici.",
       "dis.2": "Veuillez vous éloigner si un nom identique ou un autre couple vous met mal à l'aise.",
       "dis.3": "Le ton reste doux. Aucun contenu explicite, aucune violence, aucune publicité.",
-      "dis.analytics": "Un script de mesure discret compte les pages vues afin de savoir quels textes sont lus. Il recueille des données techniques comme la langue du navigateur, le fuseau horaire et la taille de l'écran ; il ne lit ni les lettres, ni la conversation, ni votre nom.",
+      "dis.analytics": "Un script de mesure discret compte les pages vues et les clics sur les boutons (langue, filtres, ouverture d'une image, copie ou effacement d'une conversation) afin de savoir quelles parties du sanctuaire sont utilisées. Il recueille des données techniques comme la langue du navigateur, le fuseau horaire et la taille de l'écran ; il ne lit ni les lettres, ni la conversation, ni votre nom.",
       "dis.4": "Les images d'ambiance proviennent de Wikimedia Commons et des collections en accès ouvert de musées, le plus souvent domaine public ou CC0 ; l'une est utilisée sous CC BY 2.0, recadrée et créditée sous sa légende. Les polices sont Newsreader, Spectral, Cinzel, Cinzel Decorative, Cormorant Infant, Cormorant Garamond et LXGW WenKai, toutes sous licence SIL Open Font License.",
       "dis.footer": "Pour une lectrice tranquille.",
 
@@ -642,7 +705,15 @@
       target.searchParams.set("lang", lang);
       link.setAttribute("href", target.href);
     });
-    document.title = dict["site.name"] + " · " + dict["site.eyebrow"];
+    /* Each page declares its own i18n key on <html data-page-title>; fall back
+       to the site eyebrow so pages without the attribute keep the old title. */
+    var pageKey = document.documentElement.getAttribute("data-page-title");
+    var pageTitle = (pageKey && dict[pageKey]) ? dict[pageKey] : dict["site.eyebrow"];
+    document.title = pageTitle + " · " + dict["site.name"];
+
+    /* Let progressive-enhancement modules (e.g. the gallery lightbox) refresh
+       any dynamic copy that the attribute-based pass above cannot reach. */
+    document.dispatchEvent(new CustomEvent("shrine:languagechange"));
   }
 
   window.ShrineI18n = {

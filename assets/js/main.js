@@ -49,6 +49,26 @@
     });
   }
 
+  function setupReadProgress() {
+    if (document.documentElement.hasAttribute("data-no-progress")) return;
+    var bar = document.createElement("div");
+    bar.className = "read-progress";
+    bar.setAttribute("aria-hidden", "true");
+    document.body.appendChild(bar);
+    var ticking = false;
+    function update() {
+      var max = document.documentElement.scrollHeight - window.innerHeight;
+      var ratio = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
+      bar.style.transform = "scaleX(" + ratio + ")";
+      ticking = false;
+    }
+    window.addEventListener("scroll", function () {
+      if (!ticking) { ticking = true; window.requestAnimationFrame(update); }
+    }, { passive: true });
+    window.addEventListener("resize", update, { passive: true });
+    update();
+  }
+
   function setupReveal() {
     var items = document.querySelectorAll(".reveal");
     if (!items.length) return;
@@ -78,5 +98,6 @@
     });
 
     setupReveal();
+    setupReadProgress();
   });
 })();
