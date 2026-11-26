@@ -44,8 +44,8 @@ python -m http.server 8899
 │   ├── js/main.js             滚动显现、导航标记、语言按钮
 │   ├── img/*.webp             12 张氛围图
 │   └── fonts/*.woff2          12 个拉丁 + 22 个中文分片
-├── edgeone.json               EdgeOne Makers 构建与缓存配置
-├── esa.jsonc                  阿里云 ESA 备选配置
+├── edgeone.json               EdgeOne Makers 构建与缓存配置（CNB 源）
+├── esa.jsonc                  阿里云 ESA 部署配置（GitHub 源）
 ├── .cnb.yml                   CNB → EdgeOne 的 webhook 流水线
 ├── AGENTS.md                  给 AI agent 的工作规范
 └── .learnings/
@@ -65,20 +65,24 @@ python -m http.server 8899
 
 ## 部署
 
-### EdgeOne Makers
+两个远端各自对应一个平台，**不是镜像关系，也不能互换**：
 
-在控制台新建项目并关联仓库即可，构建配置按 `edgeone.json`：框架选「无框架 / Other」，构建和安装命令留空，输出目录为根目录。
+| 源仓库 | 部署平台 | 配置文件 |
+| --- | --- | --- |
+| CNB `xgzwlkj/nafisah`（`origin`） | EdgeOne Makers | `edgeone.json` + `.cnb.yml` |
+| GitHub `xgzwl/nafisah`（`github`） | 阿里云 ESA | `esa.jsonc` |
 
-关联方式两种，选一个就行：
+往 CNB push 只触发 EdgeOne，往 GitHub push 只触发 ESA。两边都要推，各管各的线上环境。
 
-- **GitHub**（推荐）：原生集成，push 到 `main` 自动部署。这种情况下**要把 `.cnb.yml` 删掉**，否则 CNB 那边每次 push 都会向一个不存在的接收端发通知，流水线会显示失败
-- **CNB**：CNB 不支持原生 webhook，靠 `.cnb.yml` 把 push 事件转发给 EdgeOne，配置已就位
+### EdgeOne Makers（源：CNB）
 
-`edgeone.json` 的优先级高于控制台设置，两边取值保持一致最省事。
+CNB 不支持原生 webhook，所以根目录的 `.cnb.yml` 在 `main` push 时把事件转发给 `api.edgeone.ai/eo/pages/hook/cnb`。**这是正式链路，不要删。**
 
-### 阿里云 ESA
+EdgeOne 侧建项目时按 `edgeone.json` 填：框架选「无框架 / Other」，构建和安装命令留空，输出目录为根目录。`edgeone.json` 的优先级高于控制台设置，两边取值保持一致最省事。
 
-`esa.jsonc` 是另一套备选配置，404 策略走站内页面。两套配置并存不冲突，实际生效的取决于你在哪个平台关联了仓库。
+### 阿里云 ESA（源：GitHub）
+
+`esa.jsonc` 是 ESA 的配置，构建命令与安装命令留空，资源目录为根目录，404 走站内页面。部署源是 GitHub 仓库。
 
 ### 缓存
 

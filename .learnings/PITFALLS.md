@@ -99,8 +99,8 @@
 
 | 现象 | 根因 / 判据 |
 | --- | --- |
-| CNB 上配了 webhook 却没触发部署 | **CNB 不支持原生 Webhook**，需 `.cnb.yml` 桥接；GitHub / GitLab / Bitbucket / Gitee 是原生集成 |
-| 改走 GitHub 后 CNB 流水线一直红 | `.cnb.yml` 是 CNB 路径专用。EdgeOne 关联 GitHub 后应**删掉**它，否则 CNB 每次 push 仍会 POST 到没有对应项目的地址 |
+| 误以为两个远端是镜像、想删掉 `.cnb.yml` 改走 GitHub | **CNB 是 EdgeOne Makers 的部署源，GitHub 是阿里云 ESA 的部署源，两条独立链路并存**。`.cnb.yml` 是 EdgeOne 正式链路的桥接件，不能删。CNB push 只触发 EdgeOne，GitHub push 只触发 ESA |
+| CNB 上配了 webhook 却没触发部署 | **CNB 不支持原生 Webhook**，需 `.cnb.yml` 桥接；GitHub / GitLab / Bitbucket / Gitee 是原生集成，但本项目 GitHub 源对应的是 ESA，不是 EdgeOne |
 | 纯静态站部署后空白 / 构建失败 | `edgeone.json` 优先级**高于**控制台。纯静态多页站必须写死 `{ "buildCommand": "", "installCommand": "", "outputDirectory": "." }` |
 | 更新部署了但用户看到的还是旧样式 | **长缓存不能配无 hash 文件名**。`/assets/*` 一年缓存 + `style.css` 无 hash = 更新必然失效。按类型拆：图片/字体可 `immutable` 长缓存，CSS/JS/HTML 用 `no-cache` |
 | `cnb.cool/<repo>/-/raw/main/README.md` 取不到内容 | **被 SPA 兜底**：任意路径返回同一份 index.html（三个不同文件名只差 2B）。公开仓库直接 `git clone --depth 1` |

@@ -91,11 +91,17 @@ Cinzel 把小写字母渲染成大写形态——看到「明明写小写却显�
 
 ## 部署
 
-两套配置并存，实际只有平台侧关联的那套生效：
+两套平台各有自己的部署源，**不是镜像关系，不要互换**：
 
-- **EdgeOne Makers**：`edgeone.json` 声明纯静态构建（`buildCommand` / `installCommand` 为空，`outputDirectory: "."`）与缓存策略；优先级高于控制台设置
-- **阿里云 ESA**：`esa.jsonc`，`notFoundStrategy: 404Page`
-- **CNB 流水线**：`.cnb.yml` 在 main push 时向 EdgeOne webhook 发 POST。**CNB 不支持原生 webhook，这份配置是桥接件**；若 EdgeOne 改关联 GitHub，必须删掉它，否则 CNB 流水线会一直红
+| 源仓库 | 部署平台 | 配置文件 |
+| --- | --- | --- |
+| CNB `origin` | EdgeOne Makers | `edgeone.json` + `.cnb.yml` |
+| GitHub `github` | 阿里云 ESA | `esa.jsonc` |
+
+- **EdgeOne Makers**：源是 CNB。`edgeone.json` 声明纯静态构建（`buildCommand` / `installCommand` 为空，`outputDirectory: "."`）与缓存策略，优先级高于控制台设置。CNB 不支持原生 webhook，`.cnb.yml` 在 main push 时向 EdgeOne 发 POST——**这是正式部署链路的桥接件，必须保留**
+- **阿里云 ESA**：源是 GitHub。`esa.jsonc` 里构建与安装命令留空，资源目录为根目录，`notFoundStrategy: 404Page`
+
+往 CNB push 只触发 EdgeOne，往 GitHub push 只触发 ESA。同步代码时两个远端都要推。
 
 缓存策略已按资源类型拆开：图片与字体一年 + `immutable`，CSS / JS / HTML 用 `no-cache`。这是为了修「一年缓存 + 无 hash 文件名导致用户永远拿到旧 CSS」的事故，不要改回去。
 
