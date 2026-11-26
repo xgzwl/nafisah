@@ -3,6 +3,10 @@
   "buildCommand": "",
   "installCommand": "npm ci --no-audit --no-fund",
   "outputDirectory": ".",
+  "redirects": [
+    { "source": "/tsconfig.json", "destination": "/404.html", "statusCode": 302 },
+    { "source": "/package.json", "destination": "/404.html", "statusCode": 302 }
+  ],
   "headers": [
     {
       "source": "/assets/img/*",
