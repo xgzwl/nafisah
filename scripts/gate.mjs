@@ -25,7 +25,7 @@ const SITE = (process.env.GATE_SITE || 'https://nafisah.xgzwlkj.com').replace(/\
 const MODE = (process.argv[2] || 'all').toLowerCase();
 const REPO = 'xgzwlkj/nafisah';
 const PAGES = ['index', 'about', 'quotes', 'letters', 'gallery', 'conversation', 'disclaimer', '404'];
-const JSS = ['i18n', 'main', 'letters', 'chat', 'entmesh', 'gallery', 'pwa'].map((n) => `assets/js/${n}.js`).concat(['sw.js']);
+const JSS = ['i18n', 'main', 'letters', 'chat', 'entmesh', 'gallery', 'pwa', 'heart'].map((n) => `assets/js/${n}.js`).concat(['sw.js']);
 process.chdir(ROOT);
 
 function run(cmd, args = [], opts = {}) {

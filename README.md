@@ -57,6 +57,7 @@ npm run gate          # 全部一起跑
 ├── gallery.html / conversation.html / disclaimer.html / 404.html
 ├── assets/
 │   ├── css/style.css          所有样式，单文件
+│   ├── js/heart.js            爱心点击计数 + 撒糖语录卡
 │   ├── js/i18n.js             三语字典与语言状态机
 │   ├── js/main.js             滚动显现、导航标记、语言按钮、阅读进度
 │   ├── js/gallery.js          图库分组筛选 + 灯箱
@@ -80,6 +81,8 @@ npm run gate          # 全部一起跑
 ## 交互增强
 
 三语页面顶部有阅读进度条。信墙可按语言筛选（全部／中／英／法）并翻页；图库可按主题分组浏览，点图打开灯箱（键盘左右切换、Esc 关闭）。对话页可复制每条回复、清空整段会话。这些按钮带 `data-entmesh-label`，统计脚本会记录点击但不采集正文。
+
+页眉与页脚的爱心是可点击按钮：每次点亮计数加一（存浏览器 localStorage，无账号），并轮换弹出一句本站原创撒糖语录，三语跟随界面语言。HTML 里爱心仍是 `<span>`（八页逐字一致），由 `heart.js` 在运行时提升为可访问的 `<button>`。
 
 页面注册了 Service Worker 做离线兜底：**HTML 走网络优先**（保证 `?v=` 版本串升级立即生效），图片字体缓存优先，其他静态资源网络优先、断网时回退缓存；`/api/`、`/chat`、`/stop` 等请求一律不缓存。PWA 注册与 SDK 加载都失败静默，不影响首屏。
 
