@@ -25,7 +25,7 @@ const SITE = (process.env.GATE_SITE || 'https://nafisah.xgzwlkj.com').replace(/\
 const MODE = (process.argv[2] || 'all').toLowerCase();
 const REPO = 'xgzwlkj/nafisah';
 const PAGES = ['index', 'about', 'quotes', 'letters', 'gallery', 'conversation', 'disclaimer', '404'];
-const JSS = ['i18n', 'main', 'letters', 'chat'].map((n) => `assets/js/${n}.js`);
+const JSS = ['i18n', 'main', 'letters', 'chat', 'entmesh'].map((n) => `assets/js/${n}.js`);
 process.chdir(ROOT);
 
 function run(cmd, args = [], opts = {}) {
@@ -350,6 +350,18 @@ async function onlineGates() {
       if (c !== '302' && c !== '404') bad.push(`${p}=${c}(应302/404)`);
     }
     return bad.length ? no(bad.join(' ')) : ok(`${critical.length} 源码→404, ${configs.length} 配置→302隐藏`);
+  });
+
+  await gate('online', '分析配置端点可达（key 不回显）', () => {
+    const r = curl([`${SITE}/api/analytics-config`]);
+    let d; try { d = JSON.parse(r.out); } catch { return no('配置端点非JSON: ' + r.out.slice(0, 80)); }
+    if (d.code !== 0 || !d.data) return no('配置端点 code=' + d.code + ' 或 data 为空');
+    const prefixOk = /^pk_/.test(d.data.writeKey || '');
+    const sdkOk = (d.data.sdkUrl || '').includes('entmesh.umd.js');
+    const epOk = (d.data.endpoint || '').includes('collector');
+    return prefixOk && sdkOk && epOk
+      ? ok(`key前缀=pk_ sdk=${sdkOk} collector=${epOk}（不回显key值）`)
+      : no(`key前缀=${prefixOk} sdk=${sdkOk} collector=${epOk}`);
   });
 
   await gate('online', '测试信已清理', () => {

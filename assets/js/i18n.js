@@ -187,7 +187,8 @@
       "dis.1": "This is a non-commercial fan work. The characters and settings belong to J.K. Rowling and Warner Bros.",
       "dis.bio": "This shrine belongs to Nafisah Riddle — a self-insert who has placed herself in Tom Riddle's story, and writes to him from here.",
       "dis.2": "Please turn away if the same name or another pairing would trouble you.",
-      "dis.3": "The tone stays gentle. There is no explicit content, no violence, no advertising and no third-party link.",
+      "dis.3": "The tone stays gentle. There is no explicit content, no violence and no advertising.",
+      "dis.analytics": "A small analytics script counts page views to help us understand which notes are read. It collects technical data such as browser language, time zone and screen size; it does not read the letters, the chat messages or your name.",
       "dis.4": "Atmospheric images come from Wikimedia Commons and museum Open Access collections, mostly public domain or CC0; one is used under CC BY 2.0, cropped to fit and credited beneath its caption. Typefaces are Newsreader, Spectral, Cinzel, Cinzel Decorative, Cormorant Infant, Cormorant Garamond and LXGW WenKai, all under the SIL Open Font License.",
       "dis.footer": "Made for a quiet reader.",
 
@@ -381,7 +382,8 @@
       "dis.1": "本站为非商业同人创作，角色与设定版权归 J.K. Rowling 及华纳所有。",
       "dis.bio": "这座神龛属于 Nafisah Riddle——一个把自己写进 Tom Riddle 故事里的梦女，在这里给他写信。",
       "dis.2": "若雷同梦或其他 CP 会让你不适，请自行避雷。",
-      "dis.3": "全站保持克制，无露骨内容、无血腥暴力、无商业广告、无第三方外链。",
+      "dis.3": "全站保持克制，无露骨内容、无血腥暴力、无商业广告。",
+      "dis.analytics": "站内有一个轻量的统计脚本，只记录页面浏览，用来了解哪些文字被读到。它会采集浏览器语言、时区与屏幕尺寸等技术信息，但不会读取信件正文、聊天内容或你的署名。",
       "dis.4": "氛围图片来自 Wikimedia Commons 与博物馆开放馆藏，多为公有领域或 CC0；其中一张依 CC BY 2.0 使用，经裁切并在图注下方标明作者与许可。字体为 Newsreader、Spectral、Cinzel、Cinzel Decorative、Cormorant Infant、Cormorant Garamond 与霞鹜文楷，均遵循 SIL 开源字体许可。",
       "dis.footer": "写给一位安静的读者。",
 
@@ -575,7 +577,8 @@
       "dis.1": "Ce site est une création de fan non commerciale. Les personnages et l'univers appartiennent à J.K. Rowling et Warner Bros.",
       "dis.bio": "Ce sanctuaire appartient à Nafisah Riddle — une rêveuse qui s'est glissée dans l'histoire de Tom Riddle et lui écrit d'ici.",
       "dis.2": "Veuillez vous éloigner si un nom identique ou un autre couple vous met mal à l'aise.",
-      "dis.3": "Le ton reste doux. Aucun contenu explicite, aucune violence, aucune publicité et aucun lien tiers.",
+      "dis.3": "Le ton reste doux. Aucun contenu explicite, aucune violence, aucune publicité.",
+      "dis.analytics": "Un script de mesure discret compte les pages vues afin de savoir quels textes sont lus. Il recueille des données techniques comme la langue du navigateur, le fuseau horaire et la taille de l'écran ; il ne lit ni les lettres, ni la conversation, ni votre nom.",
       "dis.4": "Les images d'ambiance proviennent de Wikimedia Commons et des collections en accès ouvert de musées, le plus souvent domaine public ou CC0 ; l'une est utilisée sous CC BY 2.0, recadrée et créditée sous sa légende. Les polices sont Newsreader, Spectral, Cinzel, Cinzel Decorative, Cormorant Infant, Cormorant Garamond et LXGW WenKai, toutes sous licence SIL Open Font License.",
       "dis.footer": "Pour une lectrice tranquille.",
 
