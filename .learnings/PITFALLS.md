@@ -167,3 +167,8 @@
 | `POST /stop` 按文档「不带 conversation-id 头」调用却 400 | 错误 `AGENT_CONVERSATION_ID_REQUIRED` 不是 handler 报的，是 **EdgeOne agent 运行时在进 handler 前强制拦截**——skill/架构文档口径被实测推翻。判据：不带头实测 400、带头实测 200 `{stopped:true}`；前端 fetch 必须带该头（值与 body.conversation_id 同）。**文档说「禁止带」时若实测报缺头，信实测不信文档** |
 | 前后端对同一缺陷并行给出互斥修复且都实施了 | 后端在 service.ts 解码、前端同时在 JS 解码 → 双重解码，`&amp;lt;` 会被误变成 `<`。判据：team-lead 必须单点裁决**并双向下发同一方案**，下发后分别 grep 两端确认另一端已撤回，不能只回一端就以为收口 |
 | SSE 响应头门禁按精确等值断言会假红 | 实测 `POST /chat` 的 wire 上出现**双份头**：handler 设的 `x-accel-buffering: no` + 平台追加的 `X-Accel-Buffering: no, no`（content-type / cache-control / connection 同样双份）。判据：门禁用「包含目标值」而非「精确等于」，否则真绿被判假红。另：短回复 <5s 跑完时 ping=0 是正常（没到心跳间隔），验证 ping 必须用长回复 |
+
+| 部署验证用 sleep 盲等而不查状态 | CNB 部署状态有权威查询：`cnb build get-build-logs --repo <org/repo> --targetRef main --createTime YYYY-MM-DD` 看每条 push 的 status/success；EdgeOne 侧用线上静态资源的 `Last-Modified` 对照构建时间判断产物是否生效（注意 hash 差异多为 CRLF 归一化，ETag/Last-Modified 才是准据）。判据：先查构建状态和时间戳，命中即停，禁止 `sleep 60/100` 反复试探——本轮为此浪费多轮且得出错误结论。另：CNB 构建 success 只代表 webhook 发送成功，EdgeOne 拉取是独立异步过程，需分别验证 |
+| 静态页面与 Agent 路由同名冲突 | `chat.html` 会遮蔽同名 Agent 路由 `/chat`（POST /chat 返回 HTML 而非 SSE，与 /chat.html 内容 hash 一致）；`/stop` 因无同名静态文件正常。本地 dev 用独立端口跑 agents 不会暴露此冲突，必须线上实测。修法需改路由名或页面名（公开 API/导航一致性，属高危改动须先确认）；`rewrites` 只支持 source→destination，无法按 HTTP 方法分流 |
+| Cloud Functions 运行时不暴露 Web Crypto subtle | `globalThis.crypto.subtle` 在本地 Node 22 可用、EdgeOne Cloud Functions 运行时不保证，HMAC 签名抛错被 failFromError 兜底成 50001 storage unavailable。判据：服务端限流/IP 哈希用 `node:crypto` 的 `createHmac`（同步、无 subtle 依赖），不用 Web Crypto |
+| 环境变量按项目隔离且需正确 env 作用域 | `edgeone makers env set` 作用在当前 link 的项目；CNB 源项目与直传项目是不同 ProjectId，密钥设错项目则线上读不到。`env set` 默认可能落到非 production，须显式 `-e production`；核验用 SHA256 指纹比对平台值/本地值，不回显明文。平台 env 更新对已热启动实例不一定立即生效 |
