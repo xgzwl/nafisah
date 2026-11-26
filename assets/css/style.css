@@ -714,6 +714,82 @@ html[lang="zh-CN"] .devotion-label { font-size: 1.0625rem; letter-spacing: 0.22e
   100% { opacity: 0.85; }
 }
 
+/* Chat panel — zero new tokens, zero radius, inline SVG only. */
+.chat-panel { max-width: 58rem; }
+.chat-log {
+  margin-block: var(--space-2);
+  padding: var(--space-2);
+  border-top: 1px solid var(--line);
+  background: var(--charcoal);
+  min-height: 12rem;
+  max-height: clamp(18rem, 52vh, 34rem);
+  overflow-y: auto;
+  overflow-wrap: break-word;
+}
+.chat-intro p { color: var(--parchment-dim); }
+.chat-prompts { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-2); }
+.chat-prompts .btn { width: auto; }
+.chat-msg { display: flex; flex-direction: column; gap: 0.3rem; margin-bottom: var(--space-3); }
+.chat-msg--user { align-items: flex-end; }
+.chat-msg--him { align-items: flex-start; }
+.chat-bubble {
+  max-width: 85%;
+  padding: var(--space-2);
+  border: 1px solid var(--line);
+  font-size: var(--fs-base);
+  line-height: 1.6;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
+}
+.chat-msg--user .chat-bubble { background: var(--ink-soft); color: var(--parchment); }
+.chat-msg--him .chat-bubble { background: var(--charcoal); color: var(--parchment); }
+.chat-author { color: var(--bronze-light); font-size: var(--fs-sm); letter-spacing: 0.1em; }
+.chat-system { text-align: center; color: var(--parchment-dim); font-size: var(--fs-sm); }
+.chat-compose textarea {
+  width: 100%;
+  min-height: 3.5rem;
+  max-height: 9rem;
+  padding: var(--space-2);
+  background: var(--charcoal);
+  color: var(--parchment);
+  border: 1px solid var(--line);
+  border-radius: 0;
+  font: inherit;
+  font-size: var(--fs-base);
+  resize: vertical;
+}
+.chat-compose textarea[aria-invalid="true"] { border-color: var(--bronze-light); }
+.chat-actions { display: flex; gap: var(--space-2); margin-top: var(--space-2); }
+.chat-actions .btn { width: auto; }
+.chat-status-visible { color: var(--parchment-dim); font-size: var(--fs-sm); }
+
+/* F2/F3 前端动态节点样式：Token 统一由 style.css 管理，JS 零样式注入 */
+.letter-compose,.letter-wall{max-width:58rem}
+.letter-compose form{display:grid;gap:var(--space-2)}
+.form-label{display:block;font-family:var(--font-display);font-size:var(--fs-sm);letter-spacing:.12em;color:var(--bronze-light);margin-bottom:.35rem}
+.form-control{width:100%;padding:var(--space-2);background:var(--charcoal);color:var(--parchment);border:1px solid var(--line);border-radius:0;font:inherit;font-size:var(--fs-base);transition:border-color 150ms var(--ease)}
+.form-control:hover,.form-control:focus{border-color:var(--bronze)}
+.form-control[aria-invalid="true"]{border-color:var(--bronze-light)}
+.form-hint,.form-count{margin:.35rem 0 0;color:var(--parchment-dim);font-size:var(--fs-sm)}
+.form-count{text-align:right}
+.form-count.is-limit{color:var(--candle)}
+.form-error{display:flex;gap:var(--space-1);align-items:flex-start;margin:.4rem 0 0;color:var(--candle);font-size:var(--fs-sm)}
+.consent-row{display:flex;gap:var(--space-2);align-items:flex-start}
+.consent-row input{min-width:20px;min-height:20px;margin-top:.3rem}
+.consent-row label{color:var(--parchment)}
+.form-banner{border:1px solid var(--line);padding:var(--space-2);margin-bottom:var(--space-2)}
+.form-banner p{margin:0 0 var(--space-2);color:var(--candle);font-size:var(--fs-sm)}
+.letter-compose .btn svg,.letter-wall .btn svg,.form-error svg,.chat-panel .btn svg{flex:none}
+.js-icon{display:block;width:1em;height:1em;flex:none}
+.chat-jump{margin-top:var(--space-2)}
+/* 必须：.form-error/.btn 的 display 会盖掉 UA 的 [hidden]，限作用域避免影响后续组件 */
+.form-error[hidden],.form-banner[hidden],.letter-success[hidden],.chat-jump[hidden],#chat-stop[hidden]{display:none!important}
+
+/* Sweet-quote grid: four cards in a clean 2x2, no stagger, no full-width card. */
+.quote-grid--sweet .quote-card { margin-top: 0; grid-column: auto; max-width: none; }
+.sweet-section { margin-top: var(--space-3); }
+.sweet-section .page-head { margin-bottom: var(--space-2); }
+
 @media (max-width: 900px) {
   .hero { grid-template-columns: 1fr; }
   .hero-visual { order: -1; }

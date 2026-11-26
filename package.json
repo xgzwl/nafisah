@@ -1,0 +1,16 @@
+{
+  "name": "nafisah-shrine",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@edgeone/pages-blob": "^0.0.14"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.7",
+    "typescript": "6.0.3"
+  }
+}
