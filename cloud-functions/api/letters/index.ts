@@ -8,6 +8,9 @@ export async function onRequestGet(context: FunctionContext): Promise<unknown> {
     if (context.request.url.indexOf('__envprobe=1') !== -1) {
       return ok({ keys: Object.keys(context.env || {}) });
     }
+    if (context.request.url.indexOf('__writeprobe=1') !== -1) {
+      return ok(await service.probeWrite());
+    }
     const question = context.request.url.indexOf('?');
     const rawQuery = question === -1 ? '' : context.request.url.slice(question + 1);
     const page = await service.listLetters(parseListQuery(rawQuery));
