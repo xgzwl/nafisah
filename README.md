@@ -71,7 +71,7 @@ npm run gate          # 全部一起跑
 
 ## 实现上的几个选择
 
-**没有构建。** 没有 `package.json`，没有框架，没有 CDN。不需要 `npm install`，也不会有依赖过期的问题。
+**静态层没有构建。** 无框架、无 CDN，HTML/CSS/字体/图片直接就是产物。F2 写信与 F3 对话依赖 `package.json` 里的两个服务端包（Blob SDK + TS），只在 Cloud Functions/Agents 侧安装，不影响静态首屏。
 
 **字体全本地。** 英文用 Cinzel / Cormorant Infant / Newsreader / Spectral，中文用霞鹜文楷。中文字体官方拆成 97 个分片，这里只保留了本站实际用到的字符，所以能控制在 1.6M。全部遵循 SIL Open Font License。
 
@@ -88,6 +88,8 @@ npm run gate          # 全部一起跑
 | CNB `xgzwlkj/nafisah`（`origin`） | EdgeOne Makers | https://nafisah.xgzwlkj.com/ | `edgeone.json` + `.cnb.yml` |
 
 往 `origin` push 触发部署。GitHub 远端 `github` 仅作代码备份，不再对应任何部署平台。
+
+`edgeone.json` 的 `redirects` 把 `/tsconfig.json` 与 `/package.json` 302 到 `/404.html`，避免配置文件内容被线上直接读取；`gate:online` 会把这两项按「必须 302/404」校验，退化成 200 即判 FAIL。
 
 ### EdgeOne Makers（源：CNB）
 
