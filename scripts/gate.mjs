@@ -222,11 +222,13 @@ async function deployGates() {
     if (!ct) return no('无构建时间');
     const built = Date.parse(ct);
     // 按 Last-Modified 判据轮询，每次都检查，非固定 sleep 盲等。
-    // 实测 EdgeOne 拉取延迟 30~80s 波动，窗口取 120s（12×10s）覆盖。
+    // 判据：LM >= 构建时间 - 10s 容差（仅抵消时间戳精度/秒级取整），
+    // 不能用 120s 容差——会把「上一次部署的旧产物」误判为本次已拉取。
+    // 实测 EdgeOne 拉取延迟 30~80s，窗口取 120s（12×10s）覆盖。
     for (let i = 0; i < 12; i++) {
       const r = curl(['-D', '-', '-o', '/dev/null', `${SITE}/`]);
       const lm = (r.out.match(/^last-modified:\s*(.+)/im) || [])[1];
-      if (lm && Date.parse(lm) >= built - 120000) return ok(`LM=${lm.trim()} built=${ct}`);
+      if (lm && Date.parse(lm) >= built - 10000) return ok(`LM=${lm.trim()} built=${ct}`);
       if (i < 11) await new Promise((res) => setTimeout(res, 10000));
     }
     return no('Last-Modified 未追上构建时间（CNB success ≠ EdgeOne 已拉取）');
