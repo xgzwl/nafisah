@@ -221,12 +221,13 @@ async function deployGates() {
     const ct = (logs.match(/createTime:\s*"([^"]+)"/) || [])[1];
     if (!ct) return no('无构建时间');
     const built = Date.parse(ct);
-    // 按 Last-Modified 判据轮询，每次都检查，非固定 sleep 盲等
-    for (let i = 0; i < 6; i++) {
+    // 按 Last-Modified 判据轮询，每次都检查，非固定 sleep 盲等。
+    // 实测 EdgeOne 拉取延迟 30~80s 波动，窗口取 120s（12×10s）覆盖。
+    for (let i = 0; i < 12; i++) {
       const r = curl(['-D', '-', '-o', '/dev/null', `${SITE}/`]);
       const lm = (r.out.match(/^last-modified:\s*(.+)/im) || [])[1];
       if (lm && Date.parse(lm) >= built - 120000) return ok(`LM=${lm.trim()} built=${ct}`);
-      if (i < 5) await new Promise((res) => setTimeout(res, 10000));
+      if (i < 11) await new Promise((res) => setTimeout(res, 10000));
     }
     return no('Last-Modified 未追上构建时间（CNB success ≠ EdgeOne 已拉取）');
   });
