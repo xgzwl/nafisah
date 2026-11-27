@@ -182,3 +182,24 @@
 | SDK 初始化成功 ≠ 数据真的上报成功，必须抓网络请求验证 | EntMesh 接入后 CDP 验证 `window.Entmesh` 存在/init 可用/零 console error，一度判定「全链路通过」；但抓 Network 才发现真实上报链断在业务层：GET /v1/browser-encryption-key 200、OPTIONS 预检 204、POST /v1/batch/{key} 全部 `net::ERR_FAILED`（重试 7 次）。用 curl 直连模拟 POST 得到 403 `{"code":"origin_denied"}`——服务端 Origin 白名单没生效，与带不带尾斜杠无关。判据：第三方埋点接入必须抓 POST 的实际响应状态（200/204 才算到达），不能只看 SDK 对象存在；「预检放行」不代表业务层放行。这类平台侧配置问题只能到第三方控制台修 Origin 白名单，不要试图用 curl 伪造 Origin 绕过 |
 
 | 埋点上报成功的判据要含 202 Accepted，别只认 200/204 | 修好 EntMesh Origin 白名单后，CDP 抓到 POST /v1/batch 返回 202（服务端异步接收成功），但探针判据写死「只认 200/204」误报 DATA_NOT_DELIVERED。判据：202/200/204 均为投递成功；同时按 method 区分 POST 与 OPTIONS 预检（同 URL 不同方法，混算会 duplicate）。真实验证链：GET /v1/browser-encryption-key 200 → POST /v1/batch/{pk_} 202 → 无重试 → 数据到达。判据「无 console error」不足以证明到达，必须看 POST 状态 |
+
+---
+
+## 十二、本轮新增（2026-11-27 Tom Riddle 3D 半身像展示页）
+
+| 现象 | 根因 / 判据 |
+| --- | --- |
+| 全网搜图找不到适合图生3D的年轻 Tom Riddle 正面肖像 | Fandom 直连被拒（curl exit 7、WebFetch fetch failed）；Commons 只有演员 Frank Dillane 的现代装采访照与后期伏地魔雕像，都不符合「深色长袍半身像」。**判据：素材来源决定生成链路，图不可得就别硬上图生3D，改文生3D 写精确提示词更可靠**。搜到的图还要核版权与授权（CC BY 需署名） |
+| Wikimedia 图片直连 403 / 超时，但 API 200 通 | `upload.wikimedia.org` 带不带 User-Agent 都超时/403，浏览器通道对非标准缩略尺寸返回 400「Use thumbnail sizes listed on /wiki/GHai」。**判据：走 `commons.wikimedia.org/w/api.php?action=query&prop=imageinfo&iiurlwidth=N` 拿标准 thumburl；不要手工拼 640px 之类的任意尺寸** |
+| 3D 生成脚本报 DONE 却没有任何本地文件 | `buddy-multimodal-generation.py 3d` 只提交+轮询，返回签名 URL，**不自动下载产物**（与 skill 文档描述不符）。**判据：解析 `raw_result.ResultFile3Ds[*].Url` 手动下载 GLB/OBJ/预览图并校验文件头（glTF v2 magic/version/length 三项一致），三份产物全部落本地，不返回远程 URL** |
+| 生成的 GLB 37MB，网页加载超时 | 解析 glTF JSON chunk 定位：3 张 4K **PNG** 贴图占 34.75MB（94%），网格仅 1 mesh/12 万面。**判据：PNG→JPEG q88 重打包即可压到 6.6MB；重打包必须重算 bufferView 的 byteOffset/byteLength 并做 4 字节对齐，改 mimeType，改完浏览器实载验证（LOADED + mesh 数 + 三角面数 + 截图），不能只验文件头** |
+| 相机按视觉规范假设的 1.6–1.8 单位摆位，模型只占画面 1/4 | 实测 GLB 尺寸是 **0.89(y)** 单位，与假设差近一倍；center.y=0.44 说明底部在原点。**判据：相机距离/fov 一律按实测 Box3 尺寸校准，规范里的「预期尺寸」只作初始估计，加载后必须实测覆盖；归一化 scale 也要写清来源常量** |
+| 模型明明渲染成功却显示「The shelf could not be read + TRY AGAIN」 | 两个独立原因，别混为一谈：① `initScene()` 的 `.catch` 覆盖过宽，`buildScene()` 抛非致命错也被当成加载失败 → **catch 只挂 GLB 加载 promise，buildScene 单独 try/catch 走 fallback(false)**；② 本地静态服务无 `/api/letters` 后端，留言加载 404 显示 `bust.lettersError`（**这句文案属于留言，不属于模型**）。**判据：先 grep i18n key 确认文案归属再定位，不要凭截图位置猜模块；本地 required-backend 失败不能算代码缺陷** |
+| 主理人与成员同时改同一个定值（MODEL_URL），反复覆盖 3 次 | 成员在做降级态测试时把路径临时改成 `does-not-exist.glb`，收尾忘了改回；主理人改回后成员又覆盖。**判据：定值冲突两轮不收敛就由主理人接管并明确「停止编辑这些行」，随后 shutdown 成员；不要在成员仍活跃时反复修同一行** |
+| 挂饰椭圆轨道在窄屏几何无解，成员各出一版（4 张/7 张/8 张、320/560/760 断点） | 视觉/体验两方按真实 CSS 复算：≤760px 单侧净空放不下 168px 卡（561px 时 free 仅 143px）。**判据：team-lead 单点裁决「全局固定 6 张 + 横滑带 ≤760px」，双向下发同一口径并声明冻结；任意成员再改数值必须先经主理人**。消息下发时注意别敲入误字符（本轮误敲 "ISHED" 发过一次勘误） |
+| `touch-action: none` 导致触屏竖滑滚不了页 | canvas 想拦截横滑旋转，用 `none` 会把竖向滚动一起吞掉。**判据：用 `pan-y`，横滑留给 JS 处理、竖滑放行浏览器；滚轮缩放只认 Ctrl/⌘ 或给出明确跳出路径，不能锁死页面** |
+| 新增 `data-i18n` key 后中文掉到 14px 以下 | Cinzel 无 CJK 字形，kicker 若只设 `--font-display` 中文会走 Georgia→serif 兜底且字号偏小。**判据：中文态显式切 `--font-zh`；项目已有 `html[lang="zh-CN"] .devotion-label{font-size:1.0625rem}` 先例，照此加独立类+中文覆盖，不要新建孤立规则** |
+| 浏览器工具无法设置自定义视口，320/561px 实拍做不了 | 本机 CDP 端口未开放，playwright/puppeteer 均未装；浏览器工具只有固定视口。**判据：这类遗留项如实标注「未实测」，不要静默跳过或声称已验；用 CSS 几何推算补证但要标明「按转述待验」，不再装新依赖仅为跑截图** |
+| 开代理后仍以为换模型要重新搜图 | 代理只解决部分站点：Wikimedia 图片从超时变 200，但 Fandom 及其 static.wikia CDN 仍 403 Cloudflare、Pixabay/Pexels 403、ArtStation 超时。**判据：逐个 curl 实测各站点 HTTP 码，不要假设「开了代理就全能连」；全身角色参考图在 CC 图库里依然没有时，文生3D 比硬找图更可靠** |
+| Python 正则改 i18n 字典时匹配不到语言段 | 文件是 CRLF，`(?m)^    en: \{$` 的 `$` 前卡着一个 `\r`，匹配失败；且字典没有 `\n  },` 这种边界。**判据：批量文案替换用「全文精确字符串 + `text.count(old)==1` 断言」，不要靠分段定位；写完立刻 node --check + 三语 key 集合比对** |
+| 改导航文案只改了新页，9 页 header 哈希分裂 | 导航项在 `.site-header` 内，`nav.bust` 的英文兜底只改了 bust.html，其余 8 页仍是旧词，header 出现两个哈希。**判据：凡 nav/header/footer 内文案，一改必须同步全部页面并逐页哈希复核；字节模式与文本模式各算一次，确认 CRLF 未被破坏** |
