@@ -10,7 +10,7 @@
   var API = "/api/hearts";
   var SOUND_KEY = "nafisah-heart-sound";
   var FALLBACK_KEY = "nafisah-hearts";
-  var LINES = ["sq1", "sq2", "sq3", "sq4"];
+  var LINES = ["sq1", "sq2", "sq3", "sq4", "sq5", "sq6"];
   var memoryIndex = -1;
   var count = 0;
   var soundOn = false;

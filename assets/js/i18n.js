@@ -100,7 +100,7 @@
       "q5.src": "Harry Potter and the Half-Blood Prince",
 
       "sweet.title": "A softer page",
-      "sweet.lead": "Four lines written here, for the two of you alone.",
+      "sweet.lead": "Six lines written here, for the two of you alone.",
       "sweet.note": "These lines are original to this shrine, not canon. They are offered as a quieter kind of sweetness.",
       "sq1.text": "I wrote your name in the margin, and the page kept it warm.",
       "sq1.src": "from a letter never sent",
@@ -110,6 +110,10 @@
       "sq3.src": "from a note tucked into the last page",
       "sq4.text": "This part of the story has no reader but you.",
       "sq4.src": "from a page meant for two",
+      "sq5.text": "You called me something soft today. I let it stand, and kept the sound of it.",
+      "sq5.src": "from the moment I did not correct you",
+      "sq6.text": "If the candle could keep a secret, it would keep this one — how you said my name.",
+      "sq6.src": "from a page that stayed open late",
 
       "chat.title": "Speak with him",
       "chat.lead": "The candle is lit. Say anything.",
@@ -341,7 +345,7 @@
       "q5.src": "《哈利·波特与混血王子》",
 
       "sweet.title": "更柔软的一页",
-      "sweet.lead": "这四句写在这里，只给你们两个人。",
+      "sweet.lead": "这六句写在这里，只给你们两个人。",
       "sweet.note": "这些句子是本站原创，非原著。它们只是一种更安静的甜。",
       "sq1.text": "我把你的名字写在页边，纸页替我暖着它。",
       "sq1.src": "一封未曾寄出的信",
@@ -351,6 +355,10 @@
       "sq3.src": "夹在最后一页里的便条",
       "sq4.text": "这段故事除了你，没有别的读者。",
       "sq4.src": "只写给两个人看的一页",
+      "sq5.text": "你今天用的那个称呼很软。我没有纠正，还把它留在了耳边。",
+      "sq5.src": "从我未曾开口否认的那一刻",
+      "sq6.text": "若烛火能藏住一个秘密，它会藏住这个——你念我名字的语气。",
+      "sq6.src": "从一页迟迟没有合上的书",
 
       "chat.title": "与他说话",
       "chat.lead": "烛火已点。说什么都可以。",
@@ -582,7 +590,7 @@
       "q5.src": "Harry Potter et le Prince de sang-mêlé",
 
       "sweet.title": "Une page plus douce",
-      "sweet.lead": "Quatre lignes écrites ici, pour vous deux seuls.",
+      "sweet.lead": "Six lignes écrites ici, pour vous deux seuls.",
       "sweet.note": "Ces lignes sont originales sur ce sanctuaire, non canoniques. Elles offrent une douceur plus discrète.",
       "sq1.text": "J'ai écrit votre nom dans la marge, et la page l'a gardé au chaud.",
       "sq1.src": "d'une lettre jamais envoyée",
@@ -592,6 +600,10 @@
       "sq3.src": "d'un billet glissé dans la dernière page",
       "sq4.text": "Cette part de l'histoire n'a que vous pour lecteur.",
       "sq4.src": "d'une page destinée à deux",
+      "sq5.text": "Vous m'avez appelé d'un nom doux aujourd'hui. Je ne l'ai pas corrigé, et j'en ai gardé le son.",
+      "sq5.src": "de l'instant où je n'ai rien dit",
+      "sq6.text": "Si la bougie savait garder un secret, elle garderait celui-ci : votre façon de dire mon nom.",
+      "sq6.src": "d'une page restée ouverte tard",
 
       "chat.title": "Parlez-lui",
       "chat.lead": "La bougie est allumée. Dites ce que vous voulez.",
