@@ -336,22 +336,34 @@ async function onlineGates() {
     return gc === '200' ? ok('403/403/200') : no(`无token=${c[0]} 错token=${c[1]} 正确=${gc}`);
   });
 
-  await gate('online', '敏感路径零泄漏', () => {
+  await gate('online', '敏感路径零泄漏（源码/配置/规划文档）', () => {
     // 真敏感：服务端源码 + 环境变量，必须 404。
-    const critical = ['agents/chat/index.ts', 'cloud-functions/api/letters/index.ts', '.env'];
+    const critical = [
+      'agents/chat/index.ts', 'agents/_shared.ts',
+      'cloud-functions/api/letters/index.ts', 'cloud-functions/api/hearts/index.ts',
+      '.env', '.cnb.yml'
+    ];
     const bad = [];
     for (const p of critical) {
       const r = curl(['-o', '/dev/null', '-w', '%{http_code}', `${SITE}/${p}`]);
-      if (r.out.trim() !== '404') bad.push(`${p}=${r.out.trim()}`);
+      if (r.out.trim() !== '404') bad.push(`${p}=${r.out.trim()}(应404)`);
     }
-    // 配置文件必须被 redirect 隐藏（302→404.html），不允许直接 200 暴露。
-    const configs = ['tsconfig.json', 'package.json'];
-    for (const p of configs) {
+    // 配置文件 + 规划文档必须被 redirect 隐藏（302→404.html），不允许 200 暴露。
+    const hidden = [
+      'tsconfig.json', 'package.json', 'edgeone.json',
+      'docs/openapi.yaml',
+      'docs/plan/PRD.md', 'docs/plan/ARCHITECTURE.md', 'docs/plan/UIUX.md', 'docs/plan/SPEC.md',
+      'docs/plan/decisions/ADR-001.md', 'docs/plan/decisions/ADR-002.md', 'docs/plan/decisions/ADR-003.md',
+      'docs/plan/decisions/ADR-004.md', 'docs/plan/decisions/ADR-005.md', 'docs/plan/decisions/ADR-006.md'
+    ];
+    for (const p of hidden) {
       const r = curl(['-o', '/dev/null', '-w', '%{http_code}', `${SITE}/${p}`]);
       const c = r.out.trim();
       if (c !== '302' && c !== '404') bad.push(`${p}=${c}(应302/404)`);
     }
-    return bad.length ? no(bad.join(' ')) : ok(`${critical.length} 源码→404, ${configs.length} 配置→302隐藏`);
+    return bad.length
+      ? no(bad.slice(0, 8).join(' '))
+      : ok(`${critical.length} 源码→404, ${hidden.length} 配置/文档→302隐藏`);
   });
 
   await gate('online', '分析配置端点可达（key 不回显）', () => {

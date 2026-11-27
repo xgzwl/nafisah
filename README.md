@@ -141,3 +141,5 @@ EdgeOne 侧建项目时按 `edgeone.json` 填：框架选「无框架 / Other」
 - [`docs/plan/`](docs/plan/) —— PRD、架构、UIUX、Spec 与 6 份 ADR 决策记录
 
 这些文档是各决策时点的快照，文中的 `?v=` 版本串 / 页面数等具体数值以代码与门禁为准；接口以 `docs/openapi.yaml` 为准。底层草稿仍留在本机 `.workbuddy/plan/`（不入库）。
+
+**这些文档只在仓库里做版本管理，不对外发布**：`edgeone.json` 的 `redirects` 把 14 个路径（3 个配置文件 + 11 份文档）302 到 `/404.html`，线上拿到的不是文档内容。仓库读者用 git 看，访客看不到。新增规划文档时必须同步在 `edgeone.json` 里加一条 redirect，并更新 `gate:online` 的隐藏清单。
