@@ -366,6 +366,19 @@ async function onlineGates() {
       : no(`key前缀=${prefixOk} sdk=${sdkOk} collector=${epOk}`);
   });
 
+  await gate('online', '爱心端点 GET/POST 递增（Blob）', () => {
+    const g = curl([`${SITE}/api/hearts`]);
+    let gd; try { gd = JSON.parse(g.out); } catch { return no('GET 非JSON: ' + g.out.slice(0, 80)); }
+    if (gd.code !== 0 || !gd.data || typeof gd.data.count !== 'number') return no('GET code=' + gd.code + ' 或 count 非数字');
+    const before = gd.data.count;
+    const p = curl(['-X', 'POST', `${SITE}/api/hearts`, '-H', 'Content-Type: application/json', '-d', '{}']);
+    let pd; try { pd = JSON.parse(p.out); } catch { return no('POST 非JSON: ' + p.out.slice(0, 80)); }
+    if (pd.code !== 0 || !pd.data || typeof pd.data.count !== 'number') return no('POST code=' + pd.code + ' 或 count 非数字');
+    return pd.data.count === before + 1
+      ? ok(`count ${before}→${pd.data.count}（全局累计，不清理）`)
+      : no(`POST 未递增 ${before}→${pd.data.count}`);
+  });
+
   await gate('online', '测试信已清理', () => {
     const token = envValue('MODERATION_TOKEN');
     if (!token) return ok(`SKIP: 本地无 token，残留 ${createdIds.length} 封待人工清理`);

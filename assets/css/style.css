@@ -651,12 +651,26 @@ html[lang="zh-CN"] .small {
   color: var(--bronze-light);
 }
 .heart-note-count {
-  margin: 0;
+  margin: 0 0 0.6rem;
   font-family: var(--font-display);
   font-size: var(--fs-xs);
   letter-spacing: 0.14em;
   color: var(--parchment-dim);
 }
+.heart-note-sound {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0.35rem 0.7rem;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--bronze-light);
+  cursor: pointer;
+  font-size: var(--fs-sm);
+  transition: color 0.3s var(--ease), border-color 0.3s var(--ease);
+}
+.heart-note-sound:hover { color: var(--candle); border-color: var(--bronze); }
+.heart-note-sound[aria-pressed="true"] { color: var(--candle); border-color: var(--bronze); }
 .heart-note-close {
   position: absolute;
   top: 0.35rem;

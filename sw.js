@@ -7,12 +7,12 @@
    Bump CACHE when shipping new static assets. */
 "use strict";
 
-var CACHE = "nafisah-v20261126h";
+var CACHE = "nafisah-v20261126i";
 var CORE = [
   "/index.html",
   "/manifest.webmanifest",
   "/icon.svg",
-  "/assets/js/heart.js?v=20261126h"
+  "/assets/js/heart.js?v=20261126i"
 ];
 
 function isApi(url) {
