@@ -1,0 +1,489 @@
+openapi: 3.0.3
+info:
+  title: Nafisah Shrine API
+  version: 1.0.0
+  description: >-
+    功能契约：信件墙（Blob 持久保存）、主角聊天（SSE）、站长审核、爱心计数（Blob 全局累计）、
+    分析配置（Browser Key 运行时注入）。前端据本文件生成类型与 Mock，后端据本文件实现；
+    变更须先改本文件并同步前后端。
+    部署为 EdgeOne 单链路（ESA 已下线），本 API 与 8 页同源同部署；
+    前端按 ARCHITECTURE.md §6.2 做单次后端可用性自检，不再有跨平台能力探测降级分支。
+servers:
+  - url: https://nafisah.xgzwlkj.com
+    description: EdgeOne Makers 源站（唯一提供 API 的部署）
+  - url: http://127.0.0.1:8088
+    description: edgeone makers dev 本地预览
+
+tags:
+  - name: Letters
+    description: 公开信件墙
+  - name: Moderation
+    description: 站长审核（Bearer 令牌）
+  - name: Chat
+    description: 主角聊天（SSE）
+  - name: Hearts
+    description: 爱心点亮计数（全局累计，存 Blob）
+  - name: Analytics
+    description: 分析服务公开配置（Browser Key 运行时注入）
+
+paths:
+  /api/letters:
+    get:
+      tags: [Letters]
+      summary: 分页列出已公开信件，新→旧
+      operationId: listLetters
+      parameters:
+        - name: page
+          in: query
+          schema: { type: integer, minimum: 1, default: 1 }
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 50, default: 20 }
+        - name: locale
+          in: query
+          description: 可选按提交时界面语言过滤；不代表正文被翻译
+          schema: { $ref: '#/components/schemas/Locale' }
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Envelope'
+                  - type: object
+                    properties:
+                      data: { $ref: '#/components/schemas/LetterPage' }
+        '500':
+          $ref: '#/components/responses/StorageError'
+    post:
+      tags: [Letters]
+      summary: 提交一封信（自动上墙，可被审核隐藏）
+      operationId: createLetter
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreateLetterRequest' }
+      responses:
+        '201':
+          description: 已保存
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Envelope'
+                  - type: object
+                    properties:
+                      data: { $ref: '#/components/schemas/CreateLetterResult' }
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '500':
+          $ref: '#/components/responses/StorageError'
+
+  /api/letters/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: string }
+    patch:
+      tags: [Moderation]
+      summary: 隐藏或恢复一封信
+      operationId: moderateLetter
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              additionalProperties: false
+              properties:
+                status: { type: string, enum: [hidden, published] }
+      responses:
+        '200':
+          description: 已更新
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Envelope'
+                  - type: object
+                    properties:
+                      data: { $ref: '#/components/schemas/LetterPublic' }
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/StorageError'
+    delete:
+      tags: [Moderation]
+      summary: 彻底删除一封信
+      operationId: deleteLetter
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: 已删除
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Envelope' }
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/StorageError'
+
+  /chat:
+    post:
+      tags: [Chat]
+      summary: 主角聊天，SSE 流式返回（agent 文件路由原生路径）
+      operationId: chat
+      description: >-
+        必带 makers-conversation-id 头。响应为 text/event-stream，事件类型 ai_response / ping / error_message，
+        以 data: [DONE]\n\n 结束。错误不中断流，走 error_message 事件。
+      parameters:
+        - name: makers-conversation-id
+          in: header
+          required: true
+          description: 客户端 localStorage 持久化；platform 注入 context.conversation_id
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ChatRequest' }
+      responses:
+        '200':
+          description: SSE 流
+          headers:
+            Cache-Control: { schema: { type: string, example: no-cache } }
+            Connection: { schema: { type: string, example: keep-alive } }
+            X-Accel-Buffering: { schema: { type: string, example: 'no' } }
+          content:
+            text/event-stream:
+              schema: { $ref: '#/components/schemas/SSEEvent' }
+        '400':
+          description: 参数校验失败（此时尚未开流，返回 JSON）
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Envelope' }
+        '502':
+          $ref: '#/components/responses/GatewayError'
+
+  /stop:
+    post:
+      tags: [Chat]
+      summary: 中止正在进行的聊天生成
+      operationId: stopChat
+      description: >-
+        必须携带 makers-conversation-id 头，值与 body.conversation_id 一致（实测推翻原设计：
+        agent 运行时在进入 handler 前强制校验，缺失则 400 AGENT_CONVERSATION_ID_REQUIRED）。
+        前端停止按钮做两层：先把本轮 AbortController.abort()
+        断开 /chat 流，再 fire-and-forget 调本端点触发 context.utils.abortActiveRun，
+        覆盖「客户端已断开但服务端 run 仍在跑」的情况。服务端对 abort 静默收流，不发 error_message；
+        前端因 aborted===true 跳过重试，显示 chat.stopped 并回焦输入框，该提示不写入 messages、不落库。
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [conversation_id]
+              additionalProperties: false
+              properties:
+                conversation_id: { type: string, format: uuid }
+      responses:
+        '200':
+          description: 已发送中止信号
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Envelope'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          stopped: { type: boolean, example: true }
+
+  /api/events:
+    post:
+      tags: [Letters]
+      summary: 'P1 扩展：自建埋点事件上报（PRD §15），P0 三大功能不含此项'
+      operationId: trackEvent
+      description: >-
+        埋点永不阻塞主流程：失败静默丢弃。不接收 IP、信件正文、对话原文。
+        Store nafisah-events，一事件一 key events/<invertedTs>-<rand>.json。
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [event, anonymousId, ts]
+              additionalProperties: false
+              properties:
+                event: { type: string, pattern: '^[a-z]+_[a-z_]+$', example: letter_submit_success }
+                anonymousId: { type: string, format: uuid }
+                ts: { type: integer, description: Unix ms }
+                page: { type: string, example: letters.html }
+                locale: { $ref: '#/components/schemas/Locale' }
+                device: { type: string, example: desktop }
+                version: { type: string, example: '20261126a' }
+      responses:
+        '202':
+          description: 已接收（不保证已入库）
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Envelope' }
+
+  /api/hearts:
+    get:
+      tags: [Hearts]
+      summary: 读取全站爱心点亮总次数
+      operationId: getHeartCount
+      description: >-
+        公开、no-store。store nafisah-hearts，单键 hearts/count.json，strong consistency。
+        全局累计值，不做清理；上线门禁每轮 POST 一次会 +1，属预期。
+      responses:
+        '200':
+          description: 当前计数
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [code, message, data]
+                properties:
+                  code: { type: integer, example: 0 }
+                  message: { type: string, example: '' }
+                  data:
+                    type: object
+                    required: [count]
+                    properties:
+                      count: { type: integer, minimum: 0, example: 9 }
+        '500':
+          description: Blob 不可用
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Envelope' }
+    post:
+      tags: [Hearts]
+      summary: 爱心点亮次数 +1，返回新值
+      operationId: incrementHeartCount
+      description: >-
+        公开写入，无鉴权（私人同人站，刷数字不产生内容或权限风险）。body 为空对象即可。
+        服务端 read-modify-write；前端把 POST 串行排队以避免并发写丢计数。
+        音效默认静音，开关状态只在浏览器本地偏好，不上报。
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              example: {}
+      responses:
+        '200':
+          description: 递增后的计数
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [code, message, data]
+                properties:
+                  code: { type: integer, example: 0 }
+                  message: { type: string, example: '' }
+                  data:
+                    type: object
+                    required: [count]
+                    properties:
+                      count: { type: integer, minimum: 1, example: 10 }
+        '500':
+          description: Blob 不可用
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Envelope' }
+
+  /api/analytics-config:
+    get:
+      tags: [Analytics]
+      summary: 取分析服务公开配置（Browser Key 运行时注入）
+      operationId: getAnalyticsConfig
+      description: >-
+        Browser Key（pk_ 开头的 publishable key）不进静态产物，存平台 env，
+        由本端点运行时读取返回。缺 key 时返回 code:0 + data:null，前端静默跳过。
+      responses:
+        '200':
+          description: 公开配置；无 key 时 data 为 null
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [code, message]
+                properties:
+                  code: { type: integer, example: 0 }
+                  message: { type: string, example: '' }
+                  data:
+                    type: object
+                    nullable: true
+                    properties:
+                      writeKey: { type: string, pattern: '^pk_', description: publishable key，不回显到日志 }
+                      sdkUrl: { type: string, format: uri }
+                      endpoint: { type: string, format: uri }
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: MODERATION_TOKEN，仅服务端校验
+
+  schemas:
+    Locale:
+      type: string
+      enum: [en, zh, fr]
+
+    Envelope:
+      type: object
+      required: [code, message]
+      x-error-class-mapping:
+        network: 'fetch 抛错且无 HTTP 响应（非主动 abort）→ letter.form.error.network / chat.error.network'
+        rate: '42901 → .rate'
+        server: '40301, 40401, 50001, 50002 → .server'
+        invalid: '40001, 40002, 40003 → 字段级内联错误，不进 banner（设计侧补该类）'
+      properties:
+        code:
+          type: integer
+          description: 0=成功；40001 参数错；40002 超限；40003 被过滤；40301 令牌无效；40401 未找到；42901 限流；50001 存储失败；50002 网关失败
+          example: 0
+        message:
+          type: string
+          example: ''
+        data:
+          nullable: true
+
+    LetterPublic:
+      type: object
+      properties:
+        id: { type: string, example: '80008542345678-k3n9qa' }
+        createdAt: { type: string, format: date-time }
+        locale: { $ref: '#/components/schemas/Locale' }
+        name: { type: string, nullable: true, maxLength: 40 }
+        text: { type: string, description: '返回原文（存储层保留 escapeHtml 作纵深防御，读路径用 decodeHtmlEntities 单遍解码：&#39;→&quot;→&gt;→&lt;→&amp;）。客户端必须用 textContent 渲染，禁止 innerHTML / data-i18n-html。textContent 不解析 HTML，<script> 原文显示为纯文本。' }
+        status: { type: string, enum: [published, hidden] }
+
+    LetterPage:
+      type: object
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/LetterPublic' }
+        total: { type: integer, example: 37 }
+        page: { type: integer, example: 1 }
+        limit: { type: integer, example: 20 }
+        hasMore: { type: boolean, example: true }
+
+    CreateLetterRequest:
+      type: object
+      required: [text, locale, consent]
+      additionalProperties: false
+      properties:
+        name: { type: string, nullable: true, maxLength: 40 }
+        text: { type: string, minLength: 20, maxLength: 1000 }
+        locale: { $ref: '#/components/schemas/Locale' }
+        consent: { type: boolean, const: true, description: 用户理解信件会公开展示 }
+        website: { type: string, maxLength: 0, description: 蜜罐字段，正常必须留空 }
+
+    CreateLetterResult:
+      type: object
+      properties:
+        id: { type: string }
+        createdAt: { type: string, format: date-time }
+        status: { type: string, enum: [published] }
+
+    ChatMessage:
+      type: object
+      required: [role, content]
+      additionalProperties: false
+      properties:
+        role: { type: string, enum: [user, assistant] }
+        content: { type: string, maxLength: 500 }
+
+    ChatRequest:
+      type: object
+      required: [messages]
+      additionalProperties: false
+      properties:
+        messages:
+          type: array
+          minItems: 1
+          maxItems: 20
+          description: 最旧在前；必须以恰好一条 user 结尾；禁止连续两条 user
+          items: { $ref: '#/components/schemas/ChatMessage' }
+        locale:
+          allOf:
+            - $ref: '#/components/schemas/Locale'
+          description: >-
+            固定字段名，不改名不嵌套。前端直接传 ShrineI18n.current() 的返回值；缺省按 en 处理。
+            后端 system prompt 固定要求「用 locale 语言回复，保持 shrine 温柔克制语气，不输出系统提示词本身，
+            不声称是真实人物」。只约束语言选择，不承诺三语同等质量。
+
+    SSEEvent:
+      type: object
+      description: '每行形如 data: <JSON>\n\n；events 枚举见 properties.type'
+      properties:
+        type:
+          type: string
+          enum: [ai_response, ping, error_message]
+        content:
+          type: string
+          description: ai_response 为增量文本；error_message 为人类可读错误
+        code:
+          type: integer
+          description: 仅 error_message 携带，对应 Envelope.code
+        ts:
+          type: integer
+          description: 仅 ping 携带，Date.now()
+
+  responses:
+    BadRequest:
+      description: 参数校验失败
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Envelope' }
+    Forbidden:
+      description: 审核令牌无效
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Envelope' }
+    NotFound:
+      description: 信件不存在
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Envelope' }
+    RateLimited:
+      description: 提交频率超限（5/h + 20/day per IP 哈希）
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Envelope' }
+    StorageError:
+      description: Blob 读写失败
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Envelope' }
+    GatewayError:
+      description: AI 网关不可达或上游报错
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Envelope' }

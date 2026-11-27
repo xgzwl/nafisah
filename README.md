@@ -134,3 +134,10 @@ EdgeOne 侧建项目时按 `edgeone.json` 填：框架选「无框架 / Other」
 改 `assets/css/style.css` 或 `assets/js/i18n.js` 时，记得同步升级七个页面里的 `?v=` 版本串，否则用户浏览器会继续用缓存里的旧文件。
 
 更细的规则和踩过的坑见 [AGENTS.md](AGENTS.md) 与 [.learnings/PITFALLS.md](.learnings/PITFALLS.md)。
+
+## 规划与 API 文档
+
+- [`docs/openapi.yaml`](docs/openapi.yaml) —— 全部已实现端点的 OpenAPI 契约（信件、审核、聊天、停止、埋点、爱心计数、分析配置）
+- [`docs/plan/`](docs/plan/) —— PRD、架构、UIUX、Spec 与 6 份 ADR 决策记录
+
+这些文档是各决策时点的快照，文中的 `?v=` 版本串 / 页面数等具体数值以代码与门禁为准；接口以 `docs/openapi.yaml` 为准。底层草稿仍留在本机 `.workbuddy/plan/`（不入库）。
