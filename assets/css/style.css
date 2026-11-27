@@ -97,6 +97,11 @@
   --candle: #f3d9a4;
   --line: rgba(176, 141, 87, 0.28);
   --shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+  /* Figure silhouette / mask tones — kept in :root so no bare hex outside tokens. */
+  --mask-solid: #000;
+  --silhouette-head: #2a2620;
+  --silhouette-robe-a: #1d1c19;
+  --silhouette-robe-b: #0e100e;
 
   /* Type scale: Chinese body copy stays at or above 17px. */
   --fs-xs: clamp(0.78rem, 0.76rem + 0.1vw, 0.84rem);
@@ -1079,4 +1084,213 @@ html[lang="zh-CN"] .devotion-label { font-size: 1.0625rem; letter-spacing: 0.22e
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation: none !important; transition-duration: 0.01ms !important; }
   .js .reveal { opacity: 1; transform: none; }
+}
+
+/* ===== Tom Riddle bust — candlelit display case ===== */
+.bust-stage {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  width: min(1120px, calc(100% - 2.5rem));
+  margin-inline: auto;
+  height: clamp(420px, 62vh, 720px);
+  border: 1px solid var(--line);
+  border-radius: 0;
+  background: var(--charcoal);
+}
+.bust-bg {
+  position: absolute; inset: 0; z-index: 1;
+  background: url("../img/banner-interior.webp") center / cover no-repeat;
+  filter: sepia(0.5) saturate(0.7) brightness(0.65);
+  opacity: 0.16;
+  -webkit-mask-image: radial-gradient(ellipse 45% 60% at 50% 50%, transparent 62%, var(--mask-solid) 100%);
+  mask-image: radial-gradient(ellipse 45% 60% at 50% 50%, transparent 62%, var(--mask-solid) 100%);
+  pointer-events: none;
+}
+.bust-vignette {
+  position: absolute; inset: 0; z-index: 2; pointer-events: none;
+  background:
+    radial-gradient(circle at 26% 18%, rgba(243, 217, 164, 0.12), transparent 34%),
+    radial-gradient(ellipse at 50% 50%, transparent 34%, rgba(14, 26, 23, 0.52) 74%, rgba(6, 12, 10, 0.92) 100%);
+}
+.bust-viewport { position: absolute; inset: 0; z-index: 3; touch-action: pan-y; cursor: grab; }
+.bust-viewport:active { cursor: grabbing; }
+.bust-viewport:focus-visible { outline: 2px solid var(--candle); outline-offset: -4px; }
+.bust-viewport canvas { display: block; width: 100%; height: 100%; }
+.bust-ground {
+  position: absolute; left: 50%; bottom: 9%; z-index: 4;
+  width: 46%; height: 10%; transform: translateX(-50%);
+  background: radial-gradient(ellipse at center, rgba(243, 217, 164, 0.20), rgba(176, 141, 87, 0.06) 45%, transparent 72%);
+  filter: blur(7px); pointer-events: none;
+}
+.bust-hud {
+  position: absolute; inset-inline: 0; bottom: 0.8rem; z-index: 6;
+  display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem;
+  padding-inline: 1rem; pointer-events: none;
+}
+.bust-hint {
+  margin: 0; font-size: 1.0625rem; line-height: 1.35;
+  letter-spacing: 0.06em; color: var(--parchment-dim);
+  text-shadow: 0 1px 4px rgba(6, 12, 10, 0.9);
+}
+.bust-hint + .bust-hint { margin-top: 0.15rem; }
+.bust-reset {
+  pointer-events: auto; flex: none;
+  border: 1px solid var(--line); border-radius: 0;
+  background: rgba(14, 26, 23, 0.82); color: var(--parchment);
+  padding: 0.5rem 0.8rem; font-size: 1.0625rem; letter-spacing: 0.08em;
+  cursor: pointer;
+}
+.bust-reset:hover { color: var(--candle); border-color: var(--bronze); }
+.bust-status {
+  position: absolute; left: 50%; top: 50%; z-index: 6;
+  transform: translate(-50%, -50%);
+  display: flex; flex-direction: column; align-items: center; gap: 0.7rem;
+  margin: 0; padding: 0.5rem 1rem; width: max-content; max-width: 80%;
+  color: var(--candle); font-size: 1.0625rem; line-height: 1.4;
+  text-align: center; text-shadow: 0 1px 6px rgba(6, 12, 10, 0.95);
+}
+.bust-progress {
+  display: block; width: min(220px, 46vw); height: 2px; overflow: hidden;
+  background: rgba(214, 180, 122, 0.18);
+}
+.bust-progress::before {
+  content: ""; display: block; width: 38%; height: 100%;
+  background: var(--bronze-light);
+  animation: bustSweep 1.35s ease-in-out infinite;
+}
+@keyframes bustSweep {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(265%); }
+}
+.bust-fallback {
+  position: absolute; inset: 0; z-index: 2;
+  display: grid; place-items: center; pointer-events: none;
+}
+.bust-silhouette {
+  position: relative; width: clamp(140px, 26%, 220px); height: 62%; opacity: 0.78;
+}
+.bust-silhouette::before {
+  content: ""; position: absolute; left: 50%; top: 2%;
+  width: 26%; aspect-ratio: 3 / 4; transform: translateX(-50%);
+  border-radius: 46% 46% 42% 42%;
+  background: linear-gradient(155deg, var(--silhouette-head), var(--charcoal) 70%);
+  box-shadow: inset 6px 0 12px rgba(243, 217, 164, 0.06);
+}
+.bust-silhouette::after {
+  content: ""; position: absolute; left: 50%; top: 26%;
+  width: 62%; height: 56%; transform: translateX(-50%);
+  border-radius: 42% 42% 8% 8%;
+  background: linear-gradient(160deg, var(--silhouette-robe-a), var(--silhouette-robe-b) 78%);
+  box-shadow: inset 0 -18px 0 -6px rgba(14, 26, 23, 0.85);
+}
+.bust-ornaments { position: absolute; inset: 0; z-index: 5; pointer-events: none; }
+.bust-ornament {
+  /* A fixed 240px card cannot clear the 45% keep-out below ~1067px stage
+     width; clamp keeps 240px on desktop and fits the side bands in between. */
+  position: absolute; width: clamp(132px, 21vw, 240px); min-height: 96px; max-height: 132px;
+  padding: 0.7rem 0.85rem; overflow: hidden;
+  border: 1px solid var(--line); border-radius: 0;
+  background: linear-gradient(150deg, rgba(232, 220, 192, 0.11), rgba(20, 20, 18, 0.88));
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.55);
+  color: var(--parchment); font: inherit; text-align: left;
+  cursor: pointer; pointer-events: auto;
+  animation: bustFloat var(--dur, 6s) ease-in-out var(--delay, 0s) infinite alternate;
+}
+.bust-ornament:hover, .bust-ornament:focus-visible { border-color: var(--bronze); }
+.bust-ornament:focus-visible { outline: 2px solid var(--candle); outline-offset: 2px; }
+.bust-ornament-text {
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3;
+  overflow: hidden; font-size: 1.0625rem; line-height: 1.35;
+}
+.bust-ornament-by {
+  display: block; margin-top: 0.25rem; font-size: 1.0625rem;
+  color: var(--bronze-light); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+@keyframes bustFloat {
+  from { transform: rotate(var(--rot, 1.5deg)) translateY(0); }
+  to { transform: rotate(var(--rot, 1.5deg)) translateY(-6px); }
+}
+.bust-ornament-note {
+  position: absolute; left: 50%; bottom: 3.4rem; transform: translateX(-50%);
+  margin: 0; width: max-content; max-width: 80%;
+  color: var(--parchment-dim); font-size: 1.0625rem; text-align: center;
+}
+.bust-letters-retry { position: absolute; left: 50%; bottom: 1.6rem; transform: translateX(-50%); }
+.bust-retry {
+  position: absolute; left: 50%; top: calc(50% + 3.4rem); z-index: 7;
+  transform: translateX(-50%);
+}
+.bust-fallback[hidden], .bust-status[hidden], .bust-ornament[hidden],
+.bust-progress[hidden], .bust-retry[hidden], .bust-letters-retry[hidden] { display: none !important; }
+
+.bust-dialog {
+  width: min(560px, calc(100vw - 2.5rem));
+  max-width: none; max-height: calc(100vh - 2rem);
+  padding: var(--space-2) calc(var(--space-2) + 0.6rem);
+  border: 1px solid var(--bronze); border-radius: 0;
+  background: var(--charcoal); color: var(--parchment);
+  box-shadow: var(--shadow); overflow: auto;
+}
+.bust-dialog::backdrop { background: rgba(6, 12, 10, 0.88); }
+.bust-dialog-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  border-bottom: 1px solid var(--line); padding-bottom: 0.7rem;
+}
+.bust-dialog h2 { font-size: var(--fs-md); }
+.bust-dialog-close {
+  flex: none; display: inline-flex; align-items: center; justify-content: center;
+  width: 44px; height: 44px; padding: 0;
+  border: 1px solid var(--line); border-radius: 0;
+  background: var(--ink-soft); color: var(--parchment); cursor: pointer;
+}
+.bust-dialog-close:hover { color: var(--candle); border-color: var(--bronze); }
+.bust-dialog-text {
+  margin: 1.2rem 0 0; font-size: 1.0625rem; line-height: 1.7;
+  white-space: pre-wrap; overflow-wrap: anywhere;
+}
+.bust-dialog-by { margin: 1rem 0 0; color: var(--bronze-light); }
+.bust-letters-head { max-width: 62ch; margin-top: var(--space-4); }
+.bust-letters-head p { margin-bottom: 0; }
+
+@media (max-width: 900px) {
+  .bust-ornament { min-height: 84px; max-height: 112px; padding: 0.55rem 0.65rem; }
+}
+@media (max-width: 767px) {
+  .bust-ornament { width: clamp(132px, 21vw, 168px); }
+}
+@media (max-width: 560px) {
+  .bust-stage { height: clamp(380px, 58vh, 520px); }
+  .bust-hud { padding-inline: 0.6rem; }
+  .bust-hint { letter-spacing: 0.02em; }
+  .bust-reset { padding: 0.4rem 0.6rem; }
+}
+/* ≤760px: the 45% keep-out leaves side bands narrower than a card, so a
+   two-column layout has no collision-free solution. A 20%-height strip stays
+   entirely below the keep-out; all six cards share one scrollable band. */
+@media (max-width: 760px) {
+  .bust-ornaments.is-strip {
+    top: auto; bottom: 0; height: 20%; min-height: 76px;
+    display: flex; align-items: center; gap: 0.5rem;
+    padding-inline: 0.6rem; overflow-x: auto; overflow-y: hidden;
+    pointer-events: auto; scroll-snap-type: x proximity;
+  }
+  .bust-ornaments.is-strip .bust-ornament {
+    position: relative; flex: 0 0 168px;
+    height: calc(100% - 0.4rem); min-height: 0; max-height: 112px;
+    scroll-snap-align: start; animation: none; transform: none !important;
+  }
+  .bust-ornaments.is-strip .bust-ornament-text { -webkit-line-clamp: 2; }
+  .bust-ornaments.is-strip .bust-ornament-note {
+    position: static; transform: none; width: auto; max-width: none;
+  }
+  .bust-ornaments.is-strip .bust-letters-retry { position: static; transform: none; }
+  .bust-hud { bottom: calc(20% + 0.7rem); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bust-ornament { animation: none; transform: rotate(var(--rot, 1.5deg)); }
+  .bust-progress::before { animation: none; width: 100%; opacity: 0.45; }
+}
+@media (forced-colors: active) {
+  .bust-viewport, .bust-ornament, .bust-reset { border-color: CanvasText; }
 }

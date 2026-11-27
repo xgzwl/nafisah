@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tom Riddle 全身像 · 低模近似预览</title>
+<style>
+  html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#0e1a17;color:#e8dcc0;font:15px/1.5 Georgia,serif}
+  canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
+  canvas:active{cursor:grabbing}
+  #note{position:fixed;left:16px;bottom:16px;max-width:520px;padding:10px 13px;background:#0e1a17e6;border:1px solid rgba(176,141,87,.45);line-height:1.6}
+  #note b{color:#d6b47a;font-weight:400;letter-spacing:.12em}
+</style>
+</head>
+<body>
+<canvas id="view" aria-label="Tom Riddle 全身像低多边形近似预览，可拖动旋转、滚轮缩放"></canvas>
+<div id="note"><b id="label">Tom Riddle · full-body figure</b><br>拖动旋转 · 滚轮缩放。本页是形状近似预览，不是可打印网格，不内嵌任何参考图片，不加载网络脚本。背面与真实尺寸属于建模假设。</div>
+<script>
+"use strict";
+const MODEL_TITLE = "Tom Riddle · full-body figure (low-poly approximation)";
+/* 可见特征来自角色设定与生成预览：苍白面部、向后梳的深色头发、深色高领及膝长袍、
+   深绿丝巾、手持魔杖、皮靴、石质底座。背面、厚度与精确轮廓为建模假设。 */
+const PARTS = [
+  {shape:"cylinder", x:0,y:-1.28,z:0, radius:0.72,h:0.14, color:"#2a2622", sides:16},
+  {shape:"box", x:-0.16,y:-0.95,z:0, w:0.3,h:0.62,d:0.34, color:"#141412"},
+  {shape:"box", x:0.16,y:-0.95,z:0, w:0.3,h:0.62,d:0.34, color:"#141412"},
+  {shape:"box", x:-0.16,y:-1.26,z:0.06, w:0.34,h:0.14,d:0.46, color:"#24211d"},
+  {shape:"box", x:0.16,y:-1.26,z:0.06, w:0.34,h:0.14,d:0.46, color:"#24211d"},
+  {shape:"box", x:0,y:-0.18,z:0, w:0.78,h:1.06,d:0.5, color:"#141412"},
+  {shape:"box", x:-0.5,y:-0.2,z:0, w:0.24,h:0.92,d:0.26, color:"#141412"},
+  {shape:"box", x:0.5,y:-0.2,z:0, w:0.24,h:0.92,d:0.26, color:"#141412"},
+  {shape:"box", x:0,y:0.4,z:0.04, w:0.46,h:0.24,d:0.38, color:"#1c2b22"},
+  {shape:"box", x:0,y:0.76,z:0.06, w:0.42,h:0.44,d:0.36, color:"#d8c8b4"},
+  {shape:"box", x:0,y:1.03,z:0.02, w:0.48,h:0.2,d:0.4, color:"#1a1714"},
+  {shape:"box", x:0,y:0.71,z:0.25, w:0.12,h:0.04,d:0.03, color:"#2d4a3a"},
+  {shape:"box", x:-0.1,y:0.82,z:0.25, w:0.05,h:0.03,d:0.02, color:"#2d4a3a"},
+  {shape:"box", x:0.1,y:0.82,z:0.25, w:0.05,h:0.03,d:0.02, color:"#2d4a3a"},
+  {shape:"box", x:-0.66,y:-0.2,z:0.14, w:0.06,h:0.9,d:0.06, color:"#6b4a2a"}
+];
+document.title = MODEL_TITLE;
+document.getElementById("label").textContent = MODEL_TITLE;
+const canvas = document.getElementById("view"), ctx = canvas.getContext("2d");
+let yaw = -0.42, pitch = 0.16, zoom = 4.4, down = false, lastX = 0, lastY = 0;
+function resize(){
+  const dpr = Math.min(devicePixelRatio || 1, 2);
+  canvas.width = Math.max(1, Math.round(innerWidth*dpr));
+  canvas.height = Math.max(1, Math.round(innerHeight*dpr));
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  draw();
+}
+const V=(x,y,z)=>({x,y,z});
+function box(p){
+  const x=p.x||0,y=p.y||0,z=p.z||0,w=p.w||1,h=p.h||1,d=p.d||1;
+  const a=[V(x-w/2,y-h/2,z-d/2),V(x+w/2,y-h/2,z-d/2),V(x+w/2,y+h/2,z-d/2),V(x-w/2,y+h/2,z-d/2),
+           V(x-w/2,y-h/2,z+d/2),V(x+w/2,y-h/2,z+d/2),V(x+w/2,y+h/2,z+d/2),V(x-w/2,y+h/2,z+d/2)];
+  return [[0,3,2,1],[4,5,6,7],[0,4,7,3],[1,2,6,5],[3,7,6,2],[0,1,5,4]].map(f=>f.map(i=>a[i]));
+}
+function cylinder(p){
+  const x=p.x||0,y=p.y||0,z=p.z||0,r=p.radius||0.5,h=p.h||1,n=Math.max(6,Math.min(48,p.sides||12));
+  const top=[],bottom=[];
+  for(let i=0;i<n;i++){const t=2*Math.PI*i/n;top.push(V(x+r*Math.cos(t),y+h/2,z+r*Math.sin(t)));bottom.push(V(x+r*Math.cos(t),y-h/2,z+r*Math.sin(t)));}
+  const faces=[top,bottom.slice().reverse()];
+  for(let i=0;i<n;i++)faces.push([bottom[i],bottom[(i+1)%n],top[(i+1)%n],top[i]]);
+  return faces;
+}
+function rotate(v){
+  const cy=Math.cos(yaw),sy=Math.sin(yaw),cx=Math.cos(pitch),sx=Math.sin(pitch);
+  const x=v.x*cy+v.z*sy,z=-v.x*sy+v.z*cy;
+  return V(x,v.y*cx-z*sx,v.y*sx+z*cx);
+}
+function project(v){
+  const k=Math.min(innerWidth,innerHeight)*0.95/(zoom-v.z);
+  return {x:innerWidth/2+v.x*k,y:innerHeight/2-v.y*k};
+}
+function shade(hex,light){
+  const v=parseInt(hex.slice(1),16),r=(v>>16)&255,g=(v>>8)&255,b=v&255;
+  const q=x=>Math.max(0,Math.min(255,Math.round(x*light)));
+  return `rgb(${q(r)},${q(g)},${q(b)})`;
+}
+function faceNormal(a,b,c){
+  const u=V(b.x-a.x,b.y-a.y,b.z-a.z),v=V(c.x-a.x,c.y-a.y,c.z-a.z);
+  return V(u.y*v.z-u.z*v.y,u.z*v.x-u.x*v.z,u.x*v.y-u.y*v.x);
+}
+function draw(){
+  ctx.clearRect(0,0,innerWidth,innerHeight);
+  const bg=ctx.createLinearGradient(0,0,0,innerHeight);
+  bg.addColorStop(0,"#16241f");bg.addColorStop(1,"#0e1a17");ctx.fillStyle=bg;ctx.fillRect(0,0,innerWidth,innerHeight);
+  const faces=[];
+  for(const part of PARTS){
+    const polygons=part.shape==="cylinder"?cylinder(part):box(part);
+    for(const poly of polygons){
+      const q=poly.map(rotate), n=faceNormal(q[0],q[1],q[2]);
+      if(n.z<=0)continue;
+      const mag=Math.hypot(n.x,n.y,n.z)||1;
+      const light=Math.max(0.36,Math.min(1.12,0.68+0.2*n.y/mag+0.2*n.z/mag));
+      faces.push({points:q.map(project),depth:q.reduce((s,v)=>s+v.z,0)/q.length,color:shade(part.color||"#94a3b8",light)});
+    }
+  }
+  faces.sort((a,b)=>a.depth-b.depth);
+  for(const f of faces){
+    ctx.beginPath();f.points.forEach((v,i)=>i?ctx.lineTo(v.x,v.y):ctx.moveTo(v.x,v.y));ctx.closePath();
+    ctx.fillStyle=f.color;ctx.fill();ctx.strokeStyle="#07111f66";ctx.lineWidth=1;ctx.stroke();
+  }
+}
+canvas.addEventListener("pointerdown",e=>{down=true;lastX=e.clientX;lastY=e.clientY;canvas.setPointerCapture(e.pointerId)});
+canvas.addEventListener("pointermove",e=>{if(!down)return;yaw+=(e.clientX-lastX)*0.008;pitch=Math.max(-1.25,Math.min(1.25,pitch+(e.clientY-lastY)*0.008));lastX=e.clientX;lastY=e.clientY;draw()});
+canvas.addEventListener("pointerup",()=>down=false);
+canvas.addEventListener("pointercancel",()=>down=false);
+canvas.addEventListener("wheel",e=>{e.preventDefault();zoom=Math.max(2.6,Math.min(12,zoom+Math.sign(e.deltaY)*0.35));draw()},{passive:false});
+addEventListener("resize",resize);resize();
+</script>
+</body>
+</html>
