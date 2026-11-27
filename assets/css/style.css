@@ -919,7 +919,7 @@ html[lang="zh-CN"] .devotion-label { font-size: 1.0625rem; letter-spacing: 0.22e
 /* 必须：.form-error/.btn 的 display 会盖掉 UA 的 [hidden]，限作用域避免影响后续组件 */
 .form-error[hidden],.form-banner[hidden],.letter-success[hidden],.chat-jump[hidden],#chat-stop[hidden]{display:none!important}
 
-/* Sweet-quote grid: four cards in a clean 2x2, no stagger, no full-width card. */
+/* Sweet-quote grid: six cards in a clean 2x3, no stagger, no full-width card. */
 .quote-grid--sweet .quote-card { margin-top: 0; grid-column: auto; max-width: none; }
 .sweet-section { margin-top: var(--space-3); }
 .sweet-section .page-head { margin-bottom: var(--space-2); }
